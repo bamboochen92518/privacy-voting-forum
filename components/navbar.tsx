@@ -9,6 +9,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
 
 /* ======================
    導覽列連結設定
@@ -35,7 +36,7 @@ export default function Navbar() {
           Privacy Voting Forum
         </Link>
 
-        {/* 中間導覽列 */}
+        {/* ========= 桌機版導覽列（sm 以上顯示） ========= */}
         <nav className="hidden gap-6 sm:flex">
           {links.map((l) => (
             <Link
@@ -53,19 +54,56 @@ export default function Navbar() {
           ))}
         </nav>
 
+        {/* ======== ★ 新增：手機版漢堡鍵 + 抽屜選單 ★ ======== */}
+        <Sheet>
+          {/* 觸發：三條線按鈕，在 sm 以下顯示 */}
+          <SheetTrigger asChild>
+            <button
+              className="sm:hidden inline-flex h-10 w-10 items-center justify-center rounded-md hover:bg-accent"
+              aria-label="Open menu"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                className="h-5 w-5"
+                stroke="currentColor"
+                fill="none"
+                strokeWidth="2"
+              >
+                <path
+                  d="M4 6h16M4 12h16M4 18h16"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          </SheetTrigger>
+
+          {/* Drawer 內容：垂直導覽列 */}
+          <SheetContent side="left" className="w-64 bg-white">
+            <nav className="mt-8 flex flex-col gap-4 pl-6">
+              {links.map((l) => (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  className={cn(
+                    "text-base",
+                    pathname === l.href
+                      ? "font-semibold text-primary"
+                      : "text-muted-foreground"
+                  )}
+                >
+                  {l.label}
+                </Link>
+              ))}
+            </nav>
+          </SheetContent>
+        </Sheet>
+
         {/* =========================================================
-           右邊區域：之後要加「錢包連線按鈕」或通知等功能
-           =========================================================
-           TODO(Wallet): 這裡可嵌入 RainbowKit / wagmi 的 ConnectButton
-           - import { ConnectButton } from "@rainbow-me/rainbowkit";
-           - 然後放置 <ConnectButton /> 在此區，並設定 props
-           
-           TODO(DB): 若需顯示使用者資料（如暱稱、投票次數等）：
-           - 可在這裡呼叫自製 hook useUser()，讀取 Supabase / API
-           - 再渲染 <Avatar /> 或 <Badge /> 元件
-        */}
-        <div className="flex items-center gap-2">
-          {/* 目前留白，未來整合錢包 / 資料庫時在此插入元件 */}
+             右邊預留區：日後插入錢包連線或使用者資訊
+          ========================================================= */}
+        <div className="hidden sm:flex items-center gap-2">
+          {/* 目前留白 */}
         </div>
       </div>
     </header>
