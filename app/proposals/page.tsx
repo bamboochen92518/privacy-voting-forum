@@ -6,31 +6,11 @@
  */
 "use client";
 
-import { useEffect, useState } from "react";
+import { useProposalContext } from "@/app/context/ProposalContext";
 import Link from "next/link";
 
-interface Proposal {
-  id: string;
-  title: string;
-  description: string;
-  // TODO: 根據需要添加其他提案屬性，例如創建時間、狀態等
-}
-
 export default function ProposalsList() {
-  // 狀態管理：提案列表
-  const [proposals, setProposals] = useState<Proposal[]>([]);
-
-  // 獲取提案列表的函數
-  const fetchProposals = async () => {
-    // TODO: 在這裡添加從後端或鏈上獲取提案的邏輯
-    // 例如：const response = await fetch('/api/proposals');
-    // const data = await response.json();
-    // setProposals(data);
-  };
-
-  useEffect(() => {
-    fetchProposals();
-  }, []);
+  const { proposals } = useProposalContext(); // 使用 ProposalContext
 
   return (
     <section className="mx-auto flex max-w-5xl flex-col items-center gap-8 px-4 py-24 text-center">

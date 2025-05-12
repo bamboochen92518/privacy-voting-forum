@@ -8,16 +8,25 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useProposalContext } from "@/app/context/ProposalContext";
 
 export default function CreateProposal() {
   // 狀態管理：提案標題和內容
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const { addProposal } = useProposalContext(); // 使用 ProposalContext
 
   // 提交表單的處理函數
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: 在這裡添加提交表單的邏輯，例如發送到後端或鏈上
+    const newProposal = {
+      id: Date.now().toString(), // 使用當前時間戳作為唯一 ID
+      title,
+      description,
+    };
+    addProposal(newProposal); // 添加提案到上下文
+    setTitle(""); // 清空表單
+    setDescription(""); // 清空表單
   };
 
   return (
