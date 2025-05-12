@@ -19,6 +19,7 @@ const links = [
   { href: "/", label: "首頁" },
   { href: "/proposals", label: "提案列表" },
   { href: "/create", label: "發起提案" },
+  { href: "/project-intro", label: "專案介紹" },
   { href: "/about_us", label: "關於我們" },
 ];
 
