@@ -1,75 +1,112 @@
-/* app/create/page.tsx
- * ------------------------------------------------------------
- * 發起提案頁面
- * － 包含提案表單，後端和鏈上連接的內容將在之後補充。
- * ------------------------------------------------------------
- */
+// app/create/page.tsx
 "use client";
 
 import { useState } from "react";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { useProposalContext } from "@/app/context/ProposalContext";
 
-export default function CreateProposal() {
-  // 狀態管理：提案標題和內容
+export default function Home() {
+  const { addProposal } = useProposalContext();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const { addProposal } = useProposalContext(); // 使用 ProposalContext
+  const [deadline, setDeadline] = useState("");
+  const [options, setOptions] = useState(["", ""]);
 
-  // 提交表單的處理函數
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleVote = () => {
     const newProposal = {
-      id: Date.now().toString(), // 使用當前時間戳作為唯一 ID
+      id: Date.now().toString(),
       title,
       description,
+      deadline,
+      options,
     };
-    addProposal(newProposal); // 添加提案到上下文
-    setTitle(""); // 清空表單
-    setDescription(""); // 清空表單
+    addProposal(newProposal);
+    alert(`您已發起投票: ${title}`);
+    // 清空表單
+    setTitle("");
+    setDescription("");
+    setDeadline("");
+    setOptions(["", ""]);
+  };
+
+  const addOption = () => {
+    setOptions([...options, ""]);
+  };
+
+  const handleOptionChange = (index: number, value: string) => {
+    const newOptions = [...options];
+    newOptions[index] = value;
+    setOptions(newOptions);
   };
 
   return (
     <section className="mx-auto flex max-w-5xl flex-col items-center gap-8 px-4 py-24 text-center">
-      <h1 className="text-4xl font-bold">發起提案</h1>
-      <form onSubmit={handleSubmit} className="w-full max-w-lg">
-        <div className="mb-4">
-          <label htmlFor="title" className="block text-lg font-semibold">
-            提案標題
+      <h1 className="text-4xl font-bold sm:text-5xl">
+        去中心化．隱私投票．<span className="text-primary">更好治理</span>
+      </h1>
+      <h2 className="text-2xl font-semibold mt-8">發起投票</h2>
+      <div className="flex flex-col items-center gap-4 w-full max-w-5xl">
+        <div className="flex flex-col w-full">
+          <label className="text-left" htmlFor="title">
+            投票標題
           </label>
           <input
-            type="text"
             id="title"
+            type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="mt-2 w-full p-2 border border-gray-300 rounded"
+            className="border rounded p-2 w-1/1"
             required
           />
         </div>
-        <div className="mb-4">
-          <label htmlFor="description" className="block text-lg font-semibold">
-            提案內容
+        <div className="flex flex-col w-full">
+          <label className="text-left" htmlFor="description">
+            投票敘述
           </label>
           <textarea
             id="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="mt-2 w-full p-2 border border-gray-300 rounded"
-            rows={5}
+            className="border rounded p-2 w-1/1 h-40"
             required
           />
         </div>
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
-        >
-          提交提案
-        </button>
-      </form>
-      <div className="mt-4">
-        <Link href="/" className="text-primary underline">
-          返回首頁
-        </Link>
+        <div className="flex flex-col w-full">
+          <label className="text-left" htmlFor="deadline">
+            投票截止日期
+          </label>
+          <input
+            id="deadline"
+            type="date"
+            value={deadline}
+            onChange={(e) => setDeadline(e.target.value)}
+            className="border rounded p-2 w-1/1"
+            required
+          />
+        </div>
+        {options.map((option, index) => (
+          <div key={index} className="flex flex-col w-full">
+            <label className="text-left" htmlFor={`option-${index}`}>
+              選項 {index + 1}
+            </label>
+            <input
+              id={`option-${index}`}
+              type="text"
+              value={option}
+              onChange={(e) => handleOptionChange(index, e.target.value)}
+              className="border rounded p-2 w-1/1"
+              required
+            />
+          </div>
+        ))}
+        <Button onClick={addOption}>新增選項</Button>
+        <Button onClick={handleVote}>發起投票</Button>
+      </div>
+      <div className="flex flex-wrap justify-center gap-4 mt-4">
+        <Button asChild>
+          <Link href="/proposals">查看投票列表</Link>
+        </Button>
       </div>
     </section>
   );

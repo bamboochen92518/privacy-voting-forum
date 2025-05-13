@@ -1,11 +1,15 @@
 "use client";
 
+// app/context/ProposalContext.tsx
 import React, { createContext, useContext, useState } from "react";
 
-interface Proposal {
+export interface Proposal {
+  // 確保這裡是 export
   id: string;
   title: string;
   description: string;
+  deadline: string;
+  options: string[];
 }
 
 interface ProposalContextType {
