@@ -12,7 +12,7 @@ export default function Home() {
       </p>
       <div className="flex flex-wrap justify-center gap-4">
         <Button asChild>
-          <Link href="/proposals">查看投票</Link>
+          <Link href="/votes">查看投票</Link>
         </Button>
         <Button asChild>
           <Link href="/create">立即發起</Link>
