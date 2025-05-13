@@ -1,6 +1,6 @@
 # Voting System on Celo
 
-This project implements a decentralized voting system using Solidity smart contracts, deployed on the Celo Alfajores testnet. It consists of a `VotingFactory` contract to create `Voting` contracts, each representing a single proposal with customizable options, deadlines, and age restrictions. The project uses Foundry for development, testing, and deployment.
+This project implements a decentralized voting system using Solidity smart contracts, deployed on the Celo Alfajores testnet. It consists of a `VotingFactory` contract to create `Voting` contracts, each representing a single proposal with customizable options and deadlines. The project uses Foundry for development, testing, and deployment.
 
 ## Project Structure
 
@@ -15,7 +15,6 @@ This project implements a decentralized voting system using Solidity smart contr
 ## Prerequisites
 
 - **Foundry**: Install Foundry by following the [official instructions](https://book.getfoundry.sh/getting-started/installation).
-- **Node.js**: Optional, for managing dependencies if needed.
 - **Celo Wallet**: A funded wallet for the Celo Alfajores testnet (get testnet funds from [Celo Faucet](https://faucet.celo.org)).
 - **Git**: For cloning the repository.
 
@@ -37,18 +36,14 @@ This project implements a decentralized voting system using Solidity smart contr
 3. **Configure Environment Variables**:
 
    - Copy the `.env_example` file to `.env`:
-
      ```bash
      cp .env_example .env
      ```
-
    - Edit `.env` to add your private key and Celo testnet RPC URL:
-
      ```
      PRIVATE_KEY=0x<your_private_key_here>
      CELO_TESTNET_RPC_URL=https://alfajores-forno.celo-testnet.org
      ```
-
      **Note**: The `PRIVATE_KEY` must include the `0x` prefix (e.g., `0x123...`). Never commit your `.env` file; ensure it’s in `.gitignore`.
 
 4. **Compile the Contracts**:
@@ -88,47 +83,66 @@ The tests cover:
 2. **Source Environment Variables**:
 
    - Load the `.env` file to make environment variables available:
-
      ```bash
      source .env
      ```
 
-3. **Deploy VotingFactory**: Deploy the `VotingFactory` contract to the Celo Alfajores testnet using `forge create`:
+3. **Deploy VotingFactory**: Deploy the `VotingFactory` contract using `forge create`:
 
    ```bash
    forge create --rpc-url $CELO_TESTNET_RPC_URL \
        --private-key $PRIVATE_KEY \
-       src/VotingFactory.sol:VotingFactory
+       src/VotingFactory.sol:VotingFactory \
+       --constructor-args \
+       0x3e2487a250e2A7b56c7ef5307Fb591Cc8C83623D \
+       123456789 \
+       1 \
+       false \
+       0 \
+       false \
+       "[0,0,0,0]" \
+       "[false,false,false]"
    ```
 
    - `--rpc-url`: Uses the RPC URL from `.env`.
    - `--private-key`: Uses the private key from `.env`.
-   - No `--constructor-args` are needed, as `VotingFactory` has no constructor arguments.
+   - `--constructor-args`:
+     - `0x3e2487a250e2A7b56c7ef5307Fb591Cc8C83623D`: Identity Verification Hub address.
+     - `123456789`: Placeholder scope (replace with the actual uint256 value for Self Protocol).
+     - `1`: Attestation ID.
+     - `false`: Disable age verification.
+     - `0`: No minimum age.
+     - `false`: Disable country restrictions.
+     - `[0,0,0,0]`: No forbidden countries (array of four uint256).
+     - `[false,false,false]`: Disable OFAC checks (array of three booleans).
+
+   **Important**: Replace `123456789` with the actual Self Protocol `scope` value computed externally.
 
 4. **Output**:
 
-   - The command outputs the deployer address, deployed contract address, and transaction hash.
+   - Foundry logs the deployed contract address and transaction details to the console.
 
 5. **Deployment Details**:
 
    - **Deployer**: `0xdeF12008061B9eB7137128CA354Aebc9816b0f6B`
-   - **Deployed to**: `0xBFcf9f3a0B597c3407d51f03C8164c26d0fdbd35`
-   - **Transaction hash**: `0x622ac355bc57c06a1a05dcde38eb9079998e769fcd701aee66305ac00625f1b6`
-   - https://celo-alfajores.blockscout.com/tx/0x622ac355bc57c06a1a05dcde38eb9079998e769fcd701aee66305ac00625f1b6
+   - **Deployed to**: `0x898aA63629bC1DF44Bf19ce25216Fe6bC209aCEe`
+   - **Transaction hash**: `0xaa32d4a68fbefe8689e28b7823de33726e79e677bf22c7565ce6d15144fce4fa`
+
+   **Note**: These details reflect the previous deployment. Redeploying will generate new values.
 
 ## Project Details
 
 - **Contracts**:
 
   - `VotingFactory`: Manages creation of `Voting` contracts and blacklists addresses from creating new contracts.
-  - `Voting`: Represents a single proposal with customizable options, deadline, and optional age restrictions.
+  - `Voting`: Represents a single proposal with customizable options and deadlines.
   - Interfaces (`IVoting`, `IVotingFactory`) provide a clean API for external integration.
 
 - **Features**:
 
   - Anyone can create a voting contract unless blacklisted.
   - Voting supports single or multiple-choice options.
-  - Deadline-based voting with optional age constraints (placeholder for oracle integration).
+  - Deadline-based voting with optional constraints.
   - Admin management for blacklist control.
 
 - **Testing**:

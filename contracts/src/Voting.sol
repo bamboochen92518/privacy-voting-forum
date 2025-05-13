@@ -1,39 +1,127 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.28;
 
-interface IVotingFactory {
-    // No functions needed in the interface
-}
+// Import Self Protocol
+import {SelfVerificationRoot} from "@selfxyz/contracts/contracts/abstract/SelfVerificationRoot.sol";
+import {ISelfVerificationRoot} from "@selfxyz/contracts/contracts/interfaces/ISelfVerificationRoot.sol";
+import {IVcAndDiscloseCircuitVerifier} from "@selfxyz/contracts/contracts/interfaces/IVcAndDiscloseCircuitVerifier.sol";
+import {IIdentityVerificationHubV1} from "@selfxyz/contracts/contracts/interfaces/IIdentityVerificationHubV1.sol";
 
+import {Formatter} from "@selfxyz/contracts/contracts/libraries/Formatter.sol";
+import {CircuitAttributeHandler} from "@selfxyz/contracts/contracts/libraries/CircuitAttributeHandler.sol";
+import {CircuitConstants} from "@selfxyz/contracts/contracts/constants/CircuitConstants.sol";
+
+/**
+ * @title Voting
+ * @notice A contract representing a single voting proposal with Self Protocol identity verification.
+ * @dev Manages voting for a proposal, enforces constraints (deadline, multiple choices, valid options), and verifies voter identities using Self Protocol proofs. Uses hardcoded verification settings that may limit country and OFAC checks.
+ */
 contract Voting {
+    // ====================================================
+    // Storage Variables
+    // ====================================================
+
+    /// @notice The scope value that proofs must match for identity verification.
+    /// @dev Used to validate that submitted proofs align with the expected scope defined by the Self Protocol.
+    uint256 internal _scope;
+
+    /// @notice The attestation ID that proofs must match for identity verification.
+    /// @dev Ensures submitted proofs contain the correct attestation ID as per Self Protocol requirements.
+    uint256 internal _attestationId;
+
+    /// @notice Configuration settings for the Self Protocol verification process.
+    /// @dev Includes settings for age verification, country restrictions, and OFAC compliance checks. Country and OFAC settings are hardcoded.
+    ISelfVerificationRoot.VerificationConfig internal _verificationConfig;
+
+    /// @notice Reference to the Self Protocol Identity Verification Hub contract.
+    /// @dev Immutable address used for verifying proofs submitted during voting.
+    IIdentityVerificationHubV1 internal immutable _identityVerificationHub;
+
+    /// @notice The address of the contract owner.
+    /// @dev Set to the deployer (VotingFactory) and has limited administrative privileges.
     address public owner;
+
+    /// @notice The address of the VotingFactory contract that deployed this contract.
+    /// @dev Links the Voting contract to its factory for tracking purposes.
     address public factory;
+
+    /// @notice The timestamp when voting ends.
+    /// @dev Voting is only allowed before this deadline.
     uint256 public deadline;
+
+    /// @notice The number of voting options available.
+    /// @dev Defines the range of valid option indices (0 to optionCount-1).
     uint256 public optionCount;
+
+    /// @notice Whether voters can select multiple options.
+    /// @dev If false, voters are restricted to a single option.
     bool public allowMultipleChoices;
-    bool public hasAgeConstraint;
-    uint256 public minAge;
+
+    /// @notice Array storing the vote count for each option.
+    /// @dev Index corresponds to option number; value is the number of votes.
     uint256[] public voteCounts;
-    mapping(address => bool) public hasVoted;
 
-    event Voted(address indexed voter, uint256[] options);
+    /// @notice Mapping of nullifiers to their voting status.
+    /// @dev Tracks whether a nullifier (from Self Protocol proof) has voted to prevent double voting.
+    mapping(uint256 => bool) public hasVoted;
 
+    /// @notice Internal mapping of nullifiers to their voting status.
+    /// @dev Mirrors hasVoted for internal verification to ensure consistency with Self Protocol checks.
+    mapping(uint256 => bool) internal _nullifiers;
+
+    // ====================================================
+    // Events
+    // ====================================================
+
+    /// @notice Emitted when a voter casts their vote.
+    /// @param nullifier The nullifier derived from the Self Protocol proof, identifying the voter.
+    /// @param options The array of option indices voted for.
+    event Voted(uint256 indexed nullifier, uint256[] options);
+
+    // ====================================================
+    // Errors
+    // ====================================================
+
+    /// @notice Thrown when the proof's scope does not match the expected scope.
+    /// @dev Triggered during proof verification in vote if the scope is invalid.
+    error InvalidScope();
+
+    /// @notice Thrown when the proof's attestation ID does not match the expected ID.
+    /// @dev Triggered during proof verification in vote if the attestation ID is invalid.
+    error InvalidAttestationId();
+
+    // ====================================================
+    // Modifiers
+    // ====================================================
+
+    /// @notice Restricts function access to the contract owner.
+    /// @dev Reverts if the caller is not the owner; currently unused in this contract.
     modifier onlyOwner() {
         require(msg.sender == owner, "Only owner can perform this action");
         _;
     }
 
+    // ====================================================
+    // Constructor
+    // ====================================================
+
     /**
-     * @notice Initializes a new voting contract for a single proposal.
-     * @dev Sets up the voting parameters and initializes the vote counts array. Reverts if option count is zero or deadline is in the past.
+     * @notice Initializes a new voting contract for a single proposal with Self Protocol verification.
+     * @dev Sets up voting parameters, initializes vote counts, and configures Self Protocol verification settings. Hardcodes country restrictions and OFAC checks to disabled, which may limit verification enforcement. Reverts if option count is zero or deadline is in the past.
+     * @param identityVerificationHub The address of the Self Protocol Identity Verification Hub contract.
+     * @param scope The expected scope value for proof validation.
+     * @param attestationId The expected attestation ID for proof validation.
      * @param _factory The address of the VotingFactory contract.
      * @param _deadline The timestamp when voting ends.
      * @param _optionCount The number of voting options available.
      * @param _allowMultipleChoices Whether voters can select multiple options.
-     * @param _hasAgeConstraint Whether an age restriction applies to voters.
-     * @param _minAge The minimum age required to vote if age constraint is enabled.
+     * @param _hasAgeConstraint Whether age verification is enabled.
+     * @param _minAge The minimum age required if age verification is enabled.
      */
     constructor(
+        address identityVerificationHub, 
+        uint256 scope, 
+        uint256 attestationId,
         address _factory,
         uint256 _deadline,
         uint256 _optionCount,
@@ -43,38 +131,65 @@ contract Voting {
     ) {
         require(_optionCount > 0, "Option count must be greater than 0");
         require(_deadline > block.timestamp, "Deadline must be in the future");
+
+        _identityVerificationHub = IIdentityVerificationHubV1(identityVerificationHub);
+        _scope = scope;
+        _attestationId = attestationId;
+        _verificationConfig.olderThanEnabled = _hasAgeConstraint;
+        _verificationConfig.olderThan = _minAge;
+        _verificationConfig.forbiddenCountriesEnabled = false;
+        _verificationConfig.forbiddenCountriesListPacked = [0, 0, 0, 0];
+        _verificationConfig.ofacEnabled = [false, false, false];
+
         owner = msg.sender;
         factory = _factory;
         deadline = _deadline;
         optionCount = _optionCount;
         allowMultipleChoices = _allowMultipleChoices;
-        hasAgeConstraint = _hasAgeConstraint;
-        minAge = _minAge;
+
         voteCounts = new uint256[](_optionCount);
     }
 
-    /**
-     * @notice Retrieves the age of a voter for age restriction checks.
-     * @dev Placeholder function returning a default age for testing. Should be replaced with an oracle or off-chain data in production.
-     * @param voter The address of the voter.
-     * @return The age of the voter.
-     */
-    function getVoterAge(address voter) internal pure returns (uint256) {
-        // For testing, return a default age; in production, use an oracle
-        return 18;
-    }
+    // ====================================================
+    // External Functions
+    // ====================================================
 
     /**
-     * @notice Allows a voter to cast their vote for one or more options.
-     * @dev Validates the vote against the proposal's constraints: must be before deadline, voter must not have voted, and age must meet requirements (if applicable). Updates vote counts and marks the voter as having voted. Reverts on invalid options or constraint violations.
+     * @notice Allows a voter to cast their vote for one or more options with Self Protocol identity verification.
+     * @dev Validates the Self Protocol proof, checks voting constraints (deadline, multiple choices, valid options), and updates vote counts. Reverts if the proof is invalid, voter has already voted, deadline has passed, or options are invalid. Uses hardcoded country and OFAC settings, which may limit verification.
+     * @param proof The Self Protocol VcAndDiscloseProof for identity verification.
      * @param options An array of option indices to vote for.
      */
-    function vote(uint256[] calldata options) external {
-        require(block.timestamp <= deadline, "Voting deadline has passed");
-        require(!hasVoted[msg.sender], "Already voted");
-        if (hasAgeConstraint) {
-            require(getVoterAge(msg.sender) >= minAge, "Voter age below minimum");
+    function vote(
+        IVcAndDiscloseCircuitVerifier.VcAndDiscloseProof memory proof, 
+        uint256[] calldata options
+    ) external {
+        if (_scope != proof.pubSignals[CircuitConstants.VC_AND_DISCLOSE_SCOPE_INDEX]) {
+            revert InvalidScope();
         }
+
+        if (_attestationId != proof.pubSignals[CircuitConstants.VC_AND_DISCLOSE_ATTESTATION_ID_INDEX]) {
+            revert InvalidAttestationId();
+        }
+
+        uint256 nullifier = proof.pubSignals[CircuitConstants.VC_AND_DISCLOSE_NULLIFIER_INDEX];
+
+        if (_nullifiers[nullifier]) {
+            revert("Already voted");
+        }
+
+        _identityVerificationHub.verifyVcAndDisclose(
+            IIdentityVerificationHubV1.VcAndDiscloseHubProof({
+                olderThanEnabled: _verificationConfig.olderThanEnabled,
+                olderThan: _verificationConfig.olderThan,
+                forbiddenCountriesEnabled: _verificationConfig.forbiddenCountriesEnabled,
+                forbiddenCountriesListPacked: _verificationConfig.forbiddenCountriesListPacked,
+                ofacEnabled: _verificationConfig.ofacEnabled,
+                vcAndDiscloseProof: proof
+            })
+        );
+
+        require(block.timestamp <= deadline, "Voting deadline has passed");
 
         if (!allowMultipleChoices) {
             require(options.length == 1, "Multiple choices not allowed");
@@ -86,16 +201,17 @@ contract Voting {
             require(options[i] < optionCount, "Invalid option index");
             voteCounts[options[i]]++;
         }
-        hasVoted[msg.sender] = true;
+        hasVoted[nullifier] = true;
+        _nullifiers[nullifier] = true;
 
-        emit Voted(msg.sender, options);
+        emit Voted(nullifier, options);
     }
 
     /**
      * @notice Retrieves the current state of the voting proposal.
-     * @dev Returns the vote counts for each option, whether the proposal is still active (before deadline), and the time remaining until the deadline.
+     * @dev Returns the vote counts for each option, whether the proposal is active (before deadline), and the time remaining until the deadline.
      * @return votes An array of vote counts for each option.
-     * @return isActive Whether the proposal is still active (before deadline).
+     * @return isActive True if the proposal is active (before deadline), false otherwise.
      * @return timeLeft The time remaining until the deadline (0 if passed).
      */
     function getProposal() external view returns (

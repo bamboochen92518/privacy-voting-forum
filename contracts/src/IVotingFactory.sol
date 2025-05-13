@@ -1,66 +1,85 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.28;
+
+import {IVcAndDiscloseCircuitVerifier} from "@selfxyz/contracts/contracts/interfaces/IVcAndDiscloseCircuitVerifier.sol";
 
 /**
  * @title IVotingFactory
- * @notice Interface for the VotingFactory contract, managing the creation and administration of voting contracts.
- * @dev Provides functions for creating voting contracts, managing blacklists, and administering permissions.
+ * @notice Interface for the VotingFactory contract, managing the creation and administration of Voting contracts with Self Protocol identity verification.
+ * @dev Defines functions, events, and state variables for deploying Voting contracts, managing blacklists via nullifiers, and administering permissions.
  */
 interface IVotingFactory {
-    /**
-     * @notice Emitted when a new voting contract is created.
-     * @param votingContract The address of the new Voting contract.
-     * @param creator The address that created the voting contract.
-     */
-    event VotingContractCreated(address indexed votingContract, address creator);
+    // ====================================================
+    // Events
+    // ====================================================
 
     /**
-     * @notice Emitted when an address's blacklist status is updated.
-     * @param user The address whose blacklist status was updated.
-     * @param status True if the address was blacklisted, false if removed.
+     * @notice Emitted when a new Voting contract is created.
+     * @param votingContract The address of the newly deployed Voting contract.
+     * @param nullifier The nullifier derived from the Self Protocol proof, identifying the creator's identity.
      */
-    event BlacklistStatusUpdated(address indexed user, bool status);
+    event VotingContractCreated(address indexed votingContract, uint256 nullifier);
+
+    /**
+     * @notice Emitted when a nullifier's blacklist status is updated.
+     * @param nullifier The nullifier whose blacklist status was updated.
+     * @param status True if the nullifier was blacklisted, false if removed.
+     */
+    event BlacklistStatusUpdated(uint256 indexed nullifier, bool status);
 
     /**
      * @notice Emitted when an address is added to the admin list.
-     * @param admin The address added as an admin.
+     * @param admin The address granted admin privileges.
      */
     event AdminAdded(address indexed admin);
 
     /**
      * @notice Emitted when an address is removed from the admin list.
-     * @param admin The address removed as an admin.
+     * @param admin The address whose admin privileges were revoked.
      */
     event AdminRemoved(address indexed admin);
 
+    // ====================================================
+    // State Variables
+    // ====================================================
+
     /**
      * @notice The address of the contract owner.
+     * @dev The owner has exclusive rights to manage admin privileges.
      */
     function owner() external view returns (address);
 
     /**
-     * @notice Mapping indicating whether an address is blacklisted from creating voting contracts.
+     * @notice Mapping of nullifiers to their blacklist status.
+     * @dev Nullifiers are derived from Self Protocol proofs to prevent blacklisted identities from creating voting contracts.
      */
-    function blacklist(address user) external view returns (bool);
+    function blacklist(uint256 nullifier) external view returns (bool);
 
     /**
-     * @notice Mapping indicating whether an address is an admin.
+     * @notice Mapping of addresses to their admin status.
+     * @dev Admins can update the blacklist; the owner is automatically an admin.
      */
     function admins(address admin) external view returns (bool);
 
     /**
-     * @notice Array of all voting contract addresses created by this factory.
+     * @notice Array of all Voting contract addresses created by this factory.
+     * @dev Stores the history of deployed Voting contracts for tracking purposes.
      */
     function votingContracts(uint256 index) external view returns (address);
 
+    // ====================================================
+    // Functions
+    // ====================================================
+
     /**
-     * @notice Creates a new voting contract for a proposal.
-     * @dev Deploys a new Voting contract with the specified parameters and adds it to the votingContracts list. Reverts if the caller is blacklisted.
+     * @notice Creates a new Voting contract for a proposal with Self Protocol identity verification.
+     * @dev Deploys a Voting contract, validates the provided proof against scope, attestation ID, and blacklist status, and records the contract address. Reverts if the proof is invalid or the nullifier is blacklisted.
      * @param deadline The timestamp when voting ends.
      * @param optionCount The number of voting options available.
      * @param allowMultipleChoices Whether voters can select multiple options.
      * @param hasAgeConstraint Whether an age restriction applies to voters.
      * @param minAge The minimum age required to vote if age constraint is enabled.
+     * @param proof The Self Protocol VcAndDiscloseProof for identity verification.
      * @return The address of the newly created Voting contract.
      */
     function createVotingContract(
@@ -68,16 +87,17 @@ interface IVotingFactory {
         uint256 optionCount,
         bool allowMultipleChoices,
         bool hasAgeConstraint,
-        uint256 minAge
+        uint256 minAge,
+        IVcAndDiscloseCircuitVerifier.VcAndDiscloseProof memory proof
     ) external returns (address);
 
     /**
-     * @notice Updates the blacklist status of an address.
-     * @dev Adds or removes an address from the blacklist, controlling their ability to create voting contracts. Only callable by admins.
-     * @param user The address to update.
-     * @param status True to blacklist the address, false to remove from blacklist.
+     * @notice Updates the blacklist status of a nullifier.
+     * @dev Sets the blacklist status for a nullifier, controlling whether the associated identity can create voting contracts. Only callable by admins.
+     * @param nullifier The nullifier to update.
+     * @param status True to blacklist the nullifier, false to remove it from the blacklist.
      */
-    function setBlacklist(address user, bool status) external;
+    function setBlacklist(uint256 nullifier, bool status) external;
 
     /**
      * @notice Adds an address to the admin list.
@@ -94,7 +114,7 @@ interface IVotingFactory {
     function removeAdmin(address admin) external;
 
     /**
-     * @notice Retrieves the list of all voting contracts created by this factory.
+     * @notice Retrieves the list of all Voting contracts created by this factory.
      * @dev Returns an array of addresses for all deployed Voting contracts.
      * @return An array of Voting contract addresses.
      */
