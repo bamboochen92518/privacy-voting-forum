@@ -125,8 +125,8 @@ The tests cover:
 5. **Deployment Details**:
 
    - **Deployer**: `0xdeF12008061B9eB7137128CA354Aebc9816b0f6B`
-   - **Deployed to**: `0x898aA63629bC1DF44Bf19ce25216Fe6bC209aCEe`
-   - **Transaction hash**: `0xaa32d4a68fbefe8689e28b7823de33726e79e677bf22c7565ce6d15144fce4fa`
+   - **Deployed to**: `0x8F73e7B7B95C312B30547A4469Aa0A627b4777b1`
+   - **Transaction hash**: `0x8dfbf32a89117d031ef5a9c96e123d23b55f46982c1fcf6e1e2095dac47d741b`
 
    **Note**: These details reflect the previous deployment. Redeploying will generate new values.
 

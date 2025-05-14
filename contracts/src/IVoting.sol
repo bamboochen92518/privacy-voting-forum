@@ -25,12 +25,6 @@ interface IVoting {
     // ====================================================
 
     /**
-     * @notice The address of the contract owner.
-     * @dev Set to the deployer (VotingFactory) and has limited administrative privileges.
-     */
-    function owner() external view returns (address);
-
-    /**
      * @notice The address of the VotingFactory contract that deployed this contract.
      * @dev Links the Voting contract to its factory for tracking purposes.
      */
@@ -70,6 +64,16 @@ interface IVoting {
     // Functions
     // ====================================================
 
+    /**
+     * @notice Verifies a Self Protocol VcAndDiscloseProof for voter eligibility.
+     * @dev Validates the proof's scope, attestation ID, and voting status, and calls the Identity Verification Hub to verify the proof. Returns the nullifier if the voter is eligible.
+     * @param proof The Self Protocol VcAndDiscloseProof to verify.
+     * @return The nullifier extracted from the proof.
+     */
+    function hasVotingPower(
+        IVcAndDiscloseCircuitVerifier.VcAndDiscloseProof memory proof
+    ) external returns (uint256);
+    
     /**
      * @notice Allows a voter to cast their vote for one or more options with Self Protocol identity verification.
      * @dev Validates the Self Protocol proof, checks voting constraints (deadline, multiple choices, valid options), and updates vote counts. Reverts if the proof is invalid, voter has already voted, deadline has passed, or options are invalid.

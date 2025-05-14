@@ -72,6 +72,16 @@ interface IVotingFactory {
     // ====================================================
 
     /**
+     * @notice Verifies a Self Protocol VcAndDiscloseProof for user identity.
+     * @dev Validates the proof's scope, attestation ID, and blacklist status, and calls the Identity Verification Hub to verify the proof. Returns the nullifier if valid.
+     * @param proof The Self Protocol VcAndDiscloseProof to verify.
+     * @return The nullifier extracted from the proof.
+     */
+    function UserVerification(
+        IVcAndDiscloseCircuitVerifier.VcAndDiscloseProof memory proof
+    ) external returns (uint256);
+
+    /**
      * @notice Creates a new Voting contract for a proposal with Self Protocol identity verification.
      * @dev Deploys a Voting contract, validates the provided proof against scope, attestation ID, and blacklist status, and records the contract address. Reverts if the proof is invalid or the nullifier is blacklisted.
      * @param deadline The timestamp when voting ends.

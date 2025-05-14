@@ -37,10 +37,6 @@ contract Voting {
     /// @dev Immutable address used for verifying proofs submitted during voting.
     IIdentityVerificationHubV1 internal immutable _identityVerificationHub;
 
-    /// @notice The address of the contract owner.
-    /// @dev Set to the deployer (VotingFactory) and has limited administrative privileges.
-    address public owner;
-
     /// @notice The address of the VotingFactory contract that deployed this contract.
     /// @dev Links the Voting contract to its factory for tracking purposes.
     address public factory;
@@ -91,17 +87,6 @@ contract Voting {
     error InvalidAttestationId();
 
     // ====================================================
-    // Modifiers
-    // ====================================================
-
-    /// @notice Restricts function access to the contract owner.
-    /// @dev Reverts if the caller is not the owner; currently unused in this contract.
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Only owner can perform this action");
-        _;
-    }
-
-    // ====================================================
     // Constructor
     // ====================================================
 
@@ -141,7 +126,6 @@ contract Voting {
         _verificationConfig.forbiddenCountriesListPacked = [0, 0, 0, 0];
         _verificationConfig.ofacEnabled = [false, false, false];
 
-        owner = msg.sender;
         factory = _factory;
         deadline = _deadline;
         optionCount = _optionCount;
@@ -155,15 +139,14 @@ contract Voting {
     // ====================================================
 
     /**
-     * @notice Allows a voter to cast their vote for one or more options with Self Protocol identity verification.
-     * @dev Validates the Self Protocol proof, checks voting constraints (deadline, multiple choices, valid options), and updates vote counts. Reverts if the proof is invalid, voter has already voted, deadline has passed, or options are invalid. Uses hardcoded country and OFAC settings, which may limit verification.
-     * @param proof The Self Protocol VcAndDiscloseProof for identity verification.
-     * @param options An array of option indices to vote for.
+     * @notice Verifies a Self Protocol VcAndDiscloseProof for voter eligibility.
+     * @dev Validates the proof's scope, attestation ID, and voting status, and calls the Identity Verification Hub to verify the proof. Returns the nullifier if the voter is eligible.
+     * @param proof The Self Protocol VcAndDiscloseProof to verify.
+     * @return The nullifier extracted from the proof.
      */
-    function vote(
-        IVcAndDiscloseCircuitVerifier.VcAndDiscloseProof memory proof, 
-        uint256[] calldata options
-    ) external {
+    function hasVotingPower(
+        IVcAndDiscloseCircuitVerifier.VcAndDiscloseProof memory proof
+    ) public returns (uint256) {
         if (_scope != proof.pubSignals[CircuitConstants.VC_AND_DISCLOSE_SCOPE_INDEX]) {
             revert InvalidScope();
         }
@@ -173,10 +156,6 @@ contract Voting {
         }
 
         uint256 nullifier = proof.pubSignals[CircuitConstants.VC_AND_DISCLOSE_NULLIFIER_INDEX];
-
-        if (_nullifiers[nullifier]) {
-            revert("Already voted");
-        }
 
         _identityVerificationHub.verifyVcAndDisclose(
             IIdentityVerificationHubV1.VcAndDiscloseHubProof({
@@ -189,7 +168,26 @@ contract Voting {
             })
         );
 
+        return nullifier;
+    }
+
+    /**
+     * @notice Allows a voter to cast their vote for one or more options with Self Protocol identity verification.
+     * @dev Validates the Self Protocol proof, checks voting constraints (deadline, multiple choices, valid options), and updates vote counts. Reverts if the proof is invalid, voter has already voted, deadline has passed, or options are invalid. Uses hardcoded country and OFAC settings, which may limit verification.
+     * @param proof The Self Protocol VcAndDiscloseProof for identity verification.
+     * @param options An array of option indices to vote for.
+     */
+    function vote(
+        IVcAndDiscloseCircuitVerifier.VcAndDiscloseProof memory proof, 
+        uint256[] calldata options
+    ) external {
+        uint256 nullifier = hasVotingPower(proof);
+
         require(block.timestamp <= deadline, "Voting deadline has passed");
+
+        if (_nullifiers[nullifier]) {
+            revert("Already voted");
+        }
 
         if (!allowMultipleChoices) {
             require(options.length == 1, "Multiple choices not allowed");

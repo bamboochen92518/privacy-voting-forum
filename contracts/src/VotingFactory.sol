@@ -151,24 +151,14 @@ contract VotingFactory {
     // ====================================================
 
     /**
-     * @notice Creates a new Voting contract for a proposal with Self Protocol identity verification.
-     * @dev Deploys a Voting contract, validates the provided proof against scope, attestation ID, and blacklist status, and records the contract address. Reverts if the proof is invalid or the nullifier is blacklisted.
-     * @param deadline The timestamp when voting ends.
-     * @param optionCount The number of voting options available.
-     * @param allowMultipleChoices Whether voters can select multiple options.
-     * @param hasAgeConstraint Whether an age restriction applies to voters.
-     * @param minAge The minimum age required to vote if age constraint is enabled.
-     * @param proof The Self Protocol VcAndDiscloseProof for identity verification.
-     * @return The address of the newly created Voting contract.
+     * @notice Verifies a Self Protocol VcAndDiscloseProof for user identity.
+     * @dev Validates the proof's scope, attestation ID, and blacklist status, and calls the Identity Verification Hub to verify the proof. Returns the nullifier if valid.
+     * @param proof The Self Protocol VcAndDiscloseProof to verify.
+     * @return The nullifier extracted from the proof.
      */
-    function createVotingContract(
-        uint256 deadline,
-        uint256 optionCount,
-        bool allowMultipleChoices,
-        bool hasAgeConstraint,
-        uint256 minAge,
+    function UserVerification (
         IVcAndDiscloseCircuitVerifier.VcAndDiscloseProof memory proof
-    ) external returns (address) {
+    ) public returns (uint256) {
         if (_scope != proof.pubSignals[CircuitConstants.VC_AND_DISCLOSE_SCOPE_INDEX]) {
             revert InvalidScope();
         }
@@ -193,6 +183,30 @@ contract VotingFactory {
                 vcAndDiscloseProof: proof
             })
         );
+
+        return nullifier;
+    }
+
+    /**
+     * @notice Creates a new Voting contract for a proposal with Self Protocol identity verification.
+     * @dev Deploys a Voting contract, validates the provided proof against scope, attestation ID, and blacklist status, and records the contract address. Reverts if the proof is invalid or the nullifier is blacklisted.
+     * @param deadline The timestamp when voting ends.
+     * @param optionCount The number of voting options available.
+     * @param allowMultipleChoices Whether voters can select multiple options.
+     * @param hasAgeConstraint Whether an age restriction applies to voters.
+     * @param minAge The minimum age required to vote if age constraint is enabled.
+     * @param proof The Self Protocol VcAndDiscloseProof for identity verification.
+     * @return The address of the newly created Voting contract.
+     */
+    function createVotingContract(
+        uint256 deadline,
+        uint256 optionCount,
+        bool allowMultipleChoices,
+        bool hasAgeConstraint,
+        uint256 minAge,
+        IVcAndDiscloseCircuitVerifier.VcAndDiscloseProof memory proof
+    ) external returns (address) {
+        uint256 nullifier = UserVerification(proof);
 
         Voting newVoting = new Voting(
             address(_identityVerificationHub),
