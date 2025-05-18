@@ -1,29 +1,29 @@
 "use client";
 
-import { useProposalContext, Proposal } from "@/app/context/ProposalContext";
+import { usePollContext, Poll } from "@/app/context/PollContext";
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
-export default function ProposalsList() {
-  const { proposals } = useProposalContext();
+export default function PollsList() {
+  const { polls } = usePollContext();
   const [selectedVotes, setSelectedVotes] = useState<{ [key: string]: string }>(
     {}
   );
   const [confirmVote, setConfirmVote] = useState<{
-    proposalId: string;
+    pollId: string;
     option: string;
   } | null>(null);
 
-  const handleVoteSelection = (proposalId: string, option: string) => {
-    setSelectedVotes({ ...selectedVotes, [proposalId]: option });
-    setConfirmVote({ proposalId, option });
+  const handleVoteSelection = (pollId: string, option: string) => {
+    setSelectedVotes({ ...selectedVotes, [pollId]: option });
+    setConfirmVote({ pollId, option });
   };
 
   const handleVote = () => {
     if (confirmVote) {
       alert(
-        `You have voted for ${confirmVote.option} on proposal ${confirmVote.proposalId}`
+        `You have voted for ${confirmVote.option} on poll ${confirmVote.pollId}`
       );
       setConfirmVote(null);
     }
@@ -32,42 +32,38 @@ export default function ProposalsList() {
   return (
     <section className="mx-auto flex max-w-5xl flex-col items-center gap-8 px-4 py-24">
       <h1 className="text-4xl font-bold sm:text-5xl">Privacy Voting Forum</h1>
-      <h2 className="text-2xl font-semibold mt-8">Vote List</h2>
+      <h2 className="text-2xl font-semibold mt-8">Poll List</h2>
       <h2 className="text-2xl font-semibold mt-8"></h2>
       <ul className="w-full max-w-lg">
-        {proposals.length === 0 ? (
+        {polls.length === 0 ? (
           <li className="text-lg text-muted-foreground">
-            No votes available at the moment.
+            No polls available at the moment.
           </li>
         ) : (
-          proposals.map((proposal: Proposal) => (
+          polls.map((poll: Poll) => (
             <li
-              key={proposal.id}
+              key={poll.id}
               className="border border-gray-300 rounded-md p-4 mb-4"
             >
               <div className="flex flex-col items-start">
-                <h2 className="text-2xl font-semibold mb-2">
-                  {proposal.title}
-                </h2>
+                <h2 className="text-2xl font-semibold mb-2">{poll.title}</h2>
                 <p className="text-lg text-muted-foreground mb-2">
-                  {proposal.description}
+                  {poll.description}
                 </p>
-                <p className="text-sm mb-2">Deadline: {proposal.deadline}</p>
+                <p className="text-sm mb-2">Deadline: {poll.deadline}</p>
                 <div className="mt-2">
-                  <span className="font-semibold text-lg">Vote Options:</span>
-                  {proposal.options.map((option: string, index: number) => (
+                  <span className="font-semibold text-lg">Poll Options:</span>
+                  {poll.options.map((option: string, index: number) => (
                     <div key={index} className="flex items-center mb-2 text-lg">
                       <input
                         type="radio"
-                        id={`option-${proposal.id}-${index}`}
-                        name={`proposal-${proposal.id}`}
+                        id={`option-${poll.id}-${index}`}
+                        name={`poll-${poll.id}`}
                         value={option}
-                        onChange={() =>
-                          handleVoteSelection(proposal.id, option)
-                        }
+                        onChange={() => handleVoteSelection(poll.id, option)}
                       />
                       <label
-                        htmlFor={`option-${proposal.id}-${index}`}
+                        htmlFor={`option-${poll.id}-${index}`}
                         className="ml-2"
                       >
                         {option}
@@ -79,7 +75,7 @@ export default function ProposalsList() {
                   Vote
                 </Button>
                 <Link
-                  href={`/proposals/${proposal.id}`}
+                  href={`/polls/${poll.id}`}
                   className="text-blue-500 underline"
                 >
                   View Details

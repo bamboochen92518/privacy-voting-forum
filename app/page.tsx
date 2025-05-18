@@ -13,10 +13,10 @@ export default function Home() {
       </p>
       <div className="flex flex-wrap justify-center gap-4">
         <Button asChild>
-          <Link href="/votes">View Votes</Link>
+          <Link href="/poll_list">View Polls</Link>
         </Button>
         <Button asChild>
-          <Link href="/create">Initiate Vote</Link>
+          <Link href="/initiate_poll">Initiate Poll</Link>
         </Button>
       </div>
     </section>

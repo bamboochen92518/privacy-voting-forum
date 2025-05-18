@@ -9,7 +9,7 @@ export default function ProjectIntro() {
         <p className="max-w-2xl text-lg text-muted-foreground">
           This project is a demonstrative Web3 governance platform that combines
           real-time front-end interaction, back-end cloud services, and
-          blockchain voting contracts. It aims to provide a transparent and
+          blockchain polling contracts. It aims to provide a transparent and
           privacy-protected community decision-making mechanism.
         </p>
       </header>
@@ -60,11 +60,11 @@ export default function ProjectIntro() {
         <ul className="list-disc list-inside">
           <li>
             <strong>Next.js Route Handler</strong>: <code>/api/*</code> for
-            initiating proposals, voting, AI fact-checking, etc., REST API.
+            initiating polls, voting, AI fact-checking, etc., REST API.
           </li>
           <li>
             <strong>Supabase</strong>: Auth (SiWE), Postgres database for
-            storing proposals and discussions.
+            storing polls and discussions.
           </li>
           <li>
             <strong>Edge Functions</strong>: Future plans to move image storage
@@ -77,7 +77,7 @@ export default function ProjectIntro() {
         <h2 className="text-2xl font-semibold">Blockchain Technology</h2>
         <ul className="list-disc list-inside">
           <li>
-            <strong>Voting Contracts</strong>: Written in Solidity{" "}
+            <strong>Polling Contracts</strong>: Written in Solidity{" "}
             <code>VotingContract.sol</code>, <code>ProposalRegistry.sol</code>,
             deployed on Sepolia or Polygon PoS.
           </li>

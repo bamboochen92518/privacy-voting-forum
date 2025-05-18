@@ -17,8 +17,8 @@ import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
    ====================== */
 const links = [
   { href: "/", label: "Home" },
-  { href: "/votes", label: "Vote List" },
-  { href: "/create", label: "Initiate Vote" },
+  { href: "/poll_list", label: "Poll List" },
+  { href: "/initiate_poll", label: "Initiate Poll" },
   { href: "/project-intro", label: "Project Intro" },
   { href: "/about_us", label: "About Us" },
 ];

@@ -4,25 +4,25 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { useProposalContext } from "@/app/context/ProposalContext";
+import { usePollContext } from "@/app/context/PollContext";
 
 export default function Home() {
-  const { addProposal } = useProposalContext();
+  const { addPoll } = usePollContext();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [deadline, setDeadline] = useState("");
   const [options, setOptions] = useState(["", ""]);
 
-  const handleVote = () => {
-    const newProposal = {
+  const handlePollCreation = () => {
+    const newPoll = {
       id: Date.now().toString(),
       title,
       description,
       deadline,
       options,
     };
-    addProposal(newProposal);
-    alert(`You have initiated a vote: ${title}`);
+    addPoll(newPoll);
+    alert(`You have initiated a poll: ${title}`);
     // Clear the form
     setTitle("");
     setDescription("");
@@ -43,11 +43,11 @@ export default function Home() {
   return (
     <section className="mx-auto flex max-w-5xl flex-col items-center gap-8 px-4 py-24 text-center">
       <h1 className="text-4xl font-bold sm:text-5xl">Privacy Voting Forum</h1>
-      <h2 className="text-2xl font-semibold mt-8">Initiate Vote</h2>
+      <h2 className="text-2xl font-semibold mt-8">Initiate Poll</h2>
       <div className="flex flex-col items-center gap-4 w-full max-w-5xl">
         <div className="flex flex-col w-full">
           <label className="text-left" htmlFor="title">
-            Vote Title
+            Poll Title
           </label>
           <input
             id="title"
@@ -60,7 +60,7 @@ export default function Home() {
         </div>
         <div className="flex flex-col w-full">
           <label className="text-left" htmlFor="description">
-            Vote Description
+            Poll Description
           </label>
           <textarea
             id="description"
@@ -72,7 +72,7 @@ export default function Home() {
         </div>
         <div className="flex flex-col w-full">
           <label className="text-left" htmlFor="deadline">
-            Voting Deadline
+            Poll Deadline
           </label>
           <input
             id="deadline"
@@ -99,11 +99,11 @@ export default function Home() {
           </div>
         ))}
         <Button onClick={addOption}>Add Option</Button>
-        <Button onClick={handleVote}>Initiate Vote</Button>
+        <Button onClick={handlePollCreation}>Initiate Poll</Button>
       </div>
       <div className="flex flex-wrap justify-center gap-4 mt-4">
         <Button asChild>
-          <Link href="/proposals">View Vote List</Link>
+          <Link href="/poll_list">View Poll List</Link>
         </Button>
       </div>
     </section>
