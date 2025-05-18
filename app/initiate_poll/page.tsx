@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { usePollContext } from "@/app/context/PollContext";
+import axios from "axios";
 
 export default function Home() {
   const { addPoll } = usePollContext();
@@ -12,21 +13,29 @@ export default function Home() {
   const [deadline, setDeadline] = useState("");
   const [options, setOptions] = useState(["", ""]);
 
-  const handlePollCreation = () => {
+  const handlePollCreation = async () => {
     const newPoll = {
-      id: Date.now().toString(),
       title,
       description,
-      deadline,
-      options,
+      options: options.map((option) => ({ text: option })),
+      creator: "0aa2b811-9fa4-4334-8f0e-1dddf7e18694",
+      end_date: deadline,
     };
-    addPoll(newPoll);
-    alert(`You have initiated a poll: ${title}`);
-    // Clear the form
-    setTitle("");
-    setDescription("");
-    setDeadline("");
-    setOptions(["", ""]);
+
+    try {
+      const response = await axios.post("/api/poll/create", newPoll);
+      if (response.status === 201) {
+        alert(`You have initiated a poll: ${title}`);
+        // Clear the form
+        setTitle("");
+        setDescription("");
+        setDeadline("");
+        setOptions(["", ""]);
+      }
+    } catch (error) {
+      console.error("Error creating poll:", error);
+      alert("Failed to create poll. Please try again.");
+    }
   };
 
   const addOption = () => {
