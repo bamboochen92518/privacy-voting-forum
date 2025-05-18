@@ -1,10 +1,8 @@
 "use client";
 
-// app/context/PollContext.tsx
 import React, { createContext, useContext, useState } from "react";
 
 export interface Poll {
-  // 確保這裡是 export
   id: string;
   title: string;
   description: string;
