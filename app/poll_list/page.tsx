@@ -2,11 +2,11 @@
 
 import { usePollContext, Poll } from "@/app/context/PollContext";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import axios from "axios";
 
 export default function PollsList() {
-  const { polls } = usePollContext();
   const [selectedVotes, setSelectedVotes] = useState<{ [key: string]: string }>(
     {}
   );
@@ -14,6 +14,20 @@ export default function PollsList() {
     pollId: string;
     option: string;
   } | null>(null);
+  const [polls, setPolls] = useState<Poll[]>([]);
+
+  useEffect(() => {
+    const fetchPolls = async () => {
+      try {
+        const response = await axios.get("/api/poll");
+        setPolls(response.data);
+      } catch (error) {
+        console.error("Error fetching polls:", error);
+      }
+    };
+
+    fetchPolls();
+  }, []);
 
   const handleVoteSelection = (pollId: string, option: string) => {
     setSelectedVotes({ ...selectedVotes, [pollId]: option });
@@ -53,23 +67,30 @@ export default function PollsList() {
                 <p className="text-sm mb-2">Deadline: {poll.deadline}</p>
                 <div className="mt-2">
                   <span className="font-semibold text-lg">Poll Options:</span>
-                  {poll.options.map((option: string, index: number) => (
-                    <div key={index} className="flex items-center mb-2 text-lg">
-                      <input
-                        type="radio"
-                        id={`option-${poll.id}-${index}`}
-                        name={`poll-${poll.id}`}
-                        value={option}
-                        onChange={() => handleVoteSelection(poll.id, option)}
-                      />
-                      <label
-                        htmlFor={`option-${poll.id}-${index}`}
-                        className="ml-2"
+                  {poll.options.map(
+                    (option: { text: string }, index: number) => (
+                      <div
+                        key={index}
+                        className="flex items-center mb-2 text-lg"
                       >
-                        {option}
-                      </label>
-                    </div>
-                  ))}
+                        <input
+                          type="radio"
+                          id={`option-${poll.id}-${index}`}
+                          name={`poll-${poll.id}`}
+                          value={option.text}
+                          onChange={() =>
+                            handleVoteSelection(poll.id, option.text)
+                          }
+                        />
+                        <label
+                          htmlFor={`option-${poll.id}-${index}`}
+                          className="ml-2"
+                        >
+                          {option.text}
+                        </label>
+                      </div>
+                    )
+                  )}
                 </div>
                 <Button onClick={handleVote} className="mt-2">
                   Vote

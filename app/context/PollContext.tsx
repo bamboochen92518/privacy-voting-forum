@@ -7,7 +7,7 @@ export interface Poll {
   title: string;
   description: string;
   deadline: string;
-  options: string[];
+  options: { text: string }[];
 }
 
 interface PollContextType {
