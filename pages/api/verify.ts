@@ -2,7 +2,6 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { getUserIdentifier } from '@selfxyz/core';
 import { ethers } from 'ethers';
 import { IVotingFactoryABI, IVotingABI } from '../../app/content/abi';
-import { VOTE_FACTORY_ADDRESS } from '../../lib/address'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'POST') {
@@ -17,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             console.log("Public signals:", publicSignals);
 
             // Contract details
-            const contractAddress = VOTE_FACTORY_ADDRESS;
+            const contractAddress = process.env.VOTE_FACTORY_ADDRESS || "";
             const address = await getUserIdentifier(publicSignals, "hex");
             console.log("Extracted address from verification result:", address);
 
