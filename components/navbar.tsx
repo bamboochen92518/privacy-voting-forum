@@ -67,6 +67,7 @@ export default function Navbar() {
   useEffect(() => {
     if (!mounted || !isConnected || !address || !selfModule) return;
     const endpoint = process.env.NEXT_PUBLIC_SELF_ENDPOINT || "";
+    const scope = process.env.NEXT_PUBLIC_SELF_SCOPE || "";
     const isLocal =
       endpoint.startsWith("http://localhost") ||
       endpoint.startsWith("http://127.0.0.1");
@@ -80,15 +81,15 @@ export default function Navbar() {
     }
     const app = new selfModule.SelfAppBuilder({
       appName: "Privacy Voting Forum",
-      scope: process.env.NEXT_PUBLIC_SELF_SCOPE,
+      scope: scope,
       endpoint: endpoint,
       endpointType: "staging_https",
       userId: address,
       userIdType: "hex",
     }).build();
     setSelfApp(app);
-    const scope = hashEndpointWithScope(endpoint, process.env.NEXT_PUBLIC_SELF_SCOPE);
-    console.log("Scope: ", scope);
+    const hashScope = hashEndpointWithScope(endpoint, scope);
+    console.log("Scope: ", hashScope);
   }, [mounted, isConnected, address, selfModule]);
 
   const handleSelfSuccess = async (result?: any) => {
