@@ -4,6 +4,7 @@ import { ethers } from 'ethers';
 import { IVotingFactoryABI, IVotingABI } from '../../app/content/abi';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+    console.log('hihihi');
     if (req.method === 'POST') {
         try {
             const { proof, publicSignals } = req.body;
