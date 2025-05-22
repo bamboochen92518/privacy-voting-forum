@@ -30,7 +30,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             const contract = new ethers.Contract(contractAddress, IVotingFactoryABI, signer);
 
             const gasPrice = ethers.parseUnits('30', 'gwei');
-            let gasLimit = BigInt(10000000);
+            let gasLimit;
+            try {
+                const estimatedGas = await contract.estimateGas.UserVerification(proof);
+                gasLimit = estimatedGas * BigInt(120) / BigInt(100);
+            } catch (err) {
+                console.warn("⚠️ gas estimate failed, use default value");
+                gasLimit = BigInt(12000000);
+            }
 
             try {
                 console.log("sucess try to send!");
