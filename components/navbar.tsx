@@ -89,7 +89,9 @@ export default function Navbar() {
     }).build();
     setSelfApp(app);
     const hashScope = hashEndpointWithScope(endpoint, scope);
-    console.log("Scope: ", hashScope);
+    console.log("Endpoint: ", endpoint);
+    console.log("Scope: ", scope);
+    console.log("Hash Scope: ", hashScope);
   }, [mounted, isConnected, address, selfModule]);
 
   const handleSelfSuccess = async (result?: any) => {
