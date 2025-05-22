@@ -23,19 +23,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             // Connect to Celo network
             const provider = new ethers.JsonRpcProvider("https://forno.celo.org");
-            console.log("Provider is good");
             const signer = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
-            console.log('contractAddress:', contractAddress);
             if (!ethers.isAddress(contractAddress)) {
                 throw new Error('Invalid contract address');
             }
-            console.log('signer:', signer.address);
-            console.log('IVotingFactoryABI: ', IVotingFactoryABI);
             const contract = new ethers.Contract(contractAddress, IVotingFactoryABI, signer);
-            console.log("Contract on Celo Testnet: ", contract);
 
             const gasPrice = ethers.parseUnits('30', 'gwei');
-            let gasLimit = BigInt(1000000);
+            let gasLimit = BigInt(10000000);
 
             try {
                 console.log("sucess try to send!");
