@@ -28,6 +28,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 throw new Error('Invalid contract address');
             }
             const contract = new ethers.Contract(contractAddress, IVotingFactoryABI, signer);
+            console.log("Contract on Celo Testnet: ", contract);
 
             const gasPrice = ethers.parseUnits('30', 'gwei');
             let gasLimit;
