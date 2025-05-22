@@ -22,20 +22,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             console.log("Extracted address from verification result:", address);
 
             // Connect to Celo network
-<<<<<<< HEAD
             const provider = new ethers.JsonRpcProvider("https://alfajores-forno.celo-testnet.org");
             const signer = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
             if (!ethers.isAddress(contractAddress)) {
                 throw new Error('Invalid contract address');
             }
-=======
-            const provider = new ethers.JsonRpcProvider("https://forno.celo.org");
-            console.log("Provider is good");
-            const signer = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
-            console.log("Signer is good");
->>>>>>> f6624ef (feat: add more debug message)
             const contract = new ethers.Contract(contractAddress, IVotingFactoryABI, signer);
-            console.log("Contract on Celo Testnet: ", contract);
 
             const gasPrice = ethers.parseUnits('30', 'gwei');
             let gasLimit;
