@@ -32,7 +32,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             const gasPrice = ethers.parseUnits('30', 'gwei');
             let gasLimit;
             try {
-                const estimatedGas = await contract.estimateGas.UserVerification(proof);
+                const estimatedGas = await contract.UserVerification.estimateGas(proof);
                 gasLimit = estimatedGas * BigInt(120) / BigInt(100);
             } catch (err) {
                 console.warn("⚠️ gas estimate failed, use default value");
