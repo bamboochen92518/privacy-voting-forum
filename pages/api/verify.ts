@@ -25,7 +25,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             const provider = new ethers.JsonRpcProvider("https://forno.celo.org");
             console.log("Provider is good");
             const signer = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
-            console.log("Signer is good");
+            console.log('contractAddress:', contractAddress);
+            if (!ethers.isAddress(contractAddress)) {
+                throw new Error('Invalid contract address');
+            }
+            console.log('signer:', signer.address);
+            console.log('IVotingFactoryABI: ', IVotingFactoryABI);
             const contract = new ethers.Contract(contractAddress, IVotingFactoryABI, signer);
             console.log("Contract on Celo Testnet: ", contract);
 
