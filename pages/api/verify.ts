@@ -25,6 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             const provider = new ethers.JsonRpcProvider("https://forno.celo.org");
             const signer = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
             const contract = new ethers.Contract(contractAddress, IVotingFactoryABI, signer);
+            console.log("Contract on Celo Testnet: ", contract);
 
             const gasPrice = ethers.parseUnits('30', 'gwei');
             let gasLimit = BigInt(1000000);
