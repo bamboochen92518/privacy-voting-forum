@@ -27,7 +27,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             const contract = new ethers.Contract(contractAddress, IVotingFactoryABI, signer);
 
             const gasPrice = ethers.parseUnits('30', 'gwei');
-            let gasLimit = 1_000_000n;
+            let gasLimit = BigInt(1000000);
 
             try {
                 console.log("sucess try to send!");
