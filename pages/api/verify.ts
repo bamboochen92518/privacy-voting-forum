@@ -23,7 +23,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             // Connect to Celo network
             const provider = new ethers.JsonRpcProvider("https://forno.celo.org");
+            console.log("Provider is good");
             const signer = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
+            console.log("Signer is good");
             const contract = new ethers.Contract(contractAddress, IVotingFactoryABI, signer);
             console.log("Contract on Celo Testnet: ", contract);
 
