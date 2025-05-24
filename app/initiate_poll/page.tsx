@@ -11,7 +11,10 @@ export default function Home() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [deadline, setDeadline] = useState("");
-  const [options, setOptions] = useState(["", ""]);
+  const [options, setOptions] = useState([
+    { text: "", description: "" },
+    { text: "", description: "" },
+  ]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handlePollCreation = async () => {
@@ -19,7 +22,7 @@ export default function Home() {
       !title.trim() ||
       !description.trim() ||
       !deadline ||
-      options.some((opt) => !opt.trim())
+      options.some((opt) => !opt.text.trim())
     ) {
       alert("Please fill in all fields.");
       return;
@@ -28,7 +31,12 @@ export default function Home() {
     const newPoll = {
       title,
       description,
-      options: options.map((option) => ({ text: option })),
+      options: options.map((option) => ({
+        text: option.text,
+        ...(option.description.trim() && {
+          description: option.description.trim(),
+        }),
+      })),
       creator: "0aa2b811-9fa4-4334-8f0e-1dddf7e18694",
       end_date: deadline,
     };
@@ -42,7 +50,10 @@ export default function Home() {
         setTitle("");
         setDescription("");
         setDeadline("");
-        setOptions(["", ""]);
+        setOptions([
+          { text: "", description: "" },
+          { text: "", description: "" },
+        ]);
       }
     } catch (error) {
       console.error("Error creating poll:", error);
@@ -53,7 +64,7 @@ export default function Home() {
   };
 
   const addOption = () => {
-    setOptions([...options, ""]);
+    setOptions([...options, { text: "", description: "" }]);
   };
 
   const removeOption = (index: number) => {
@@ -65,7 +76,13 @@ export default function Home() {
 
   const handleOptionChange = (index: number, value: string) => {
     const newOptions = [...options];
-    newOptions[index] = value;
+    newOptions[index].text = value;
+    setOptions(newOptions);
+  };
+
+  const handleOptionDescriptionChange = (index: number, value: string) => {
+    const newOptions = [...options];
+    newOptions[index].description = value;
     setOptions(newOptions);
   };
 
@@ -157,28 +174,60 @@ export default function Home() {
                 Add Option
               </Button>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-4">
               {options.map((option, index) => (
-                <div key={index} className="flex items-center gap-3">
-                  <input
-                    type="text"
-                    value={option}
-                    onChange={(e) => handleOptionChange(index, e.target.value)}
-                    placeholder={`Option ${index + 1}`}
-                    className="flex-1 px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    required
-                  />
-                  {options.length > 2 && (
-                    <Button
-                      type="button"
-                      onClick={() => removeOption(index)}
-                      variant="outline"
-                      size="sm"
-                      className="text-red-600 hover:text-red-700 hover:border-red-300"
-                    >
-                      Remove
-                    </Button>
-                  )}
+                <div
+                  key={index}
+                  className="border border-gray-200 rounded-lg p-4 bg-gray-50"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="font-medium text-gray-700">
+                      Option {index + 1}
+                    </span>
+                    {options.length > 2 && (
+                      <Button
+                        type="button"
+                        onClick={() => removeOption(index)}
+                        variant="outline"
+                        size="sm"
+                        className="text-red-600 hover:text-red-700 hover:border-red-300"
+                      >
+                        Remove
+                      </Button>
+                    )}
+                  </div>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-1">
+                        Option Text <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={option.text}
+                        onChange={(e) =>
+                          handleOptionChange(index, e.target.value)
+                        }
+                        placeholder={`Enter option ${index + 1} text`}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-1">
+                        Option Description{" "}
+                        <span className="text-gray-400">(Optional)</span>
+                      </label>
+                      <textarea
+                        value={option.description}
+                        onChange={(e) =>
+                          handleOptionDescriptionChange(index, e.target.value)
+                        }
+                        placeholder="Add additional details about this option (optional)"
+                        rows={2}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                      />
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
