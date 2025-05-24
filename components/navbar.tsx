@@ -26,8 +26,8 @@ const links = [
   { href: "/", label: "Home", icon: "🏠" },
   { href: "/poll_list", label: "Poll List", icon: "📊" },
   { href: "/initiate_poll", label: "Create Poll", icon: "✨" },
-  { href: "/project-intro", label: "Project", icon: "🚀" },
-  { href: "/about_us", label: "About", icon: "👥" },
+  { href: "/project-intro", label: "Project Intro", icon: "🚀" },
+  { href: "/about_us", label: "About Us", icon: "👥" },
 ];
 
 /* ======================
