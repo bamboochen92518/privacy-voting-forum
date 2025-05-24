@@ -18,13 +18,34 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handlePollCreation = async () => {
-    if (
-      !title.trim() ||
-      !description.trim() ||
-      !deadline ||
-      options.some((opt) => !opt.text.trim())
-    ) {
-      alert("Please fill in all fields.");
+    // 检查各个必填字段
+    const missingFields = [];
+
+    if (!title.trim()) {
+      missingFields.push("Poll Title");
+    }
+
+    if (!description.trim()) {
+      missingFields.push("Poll Description");
+    }
+
+    if (!deadline) {
+      missingFields.push("Poll Deadline");
+    }
+
+    // 检查是否有空的选项文本
+    const emptyOptions = options.some((opt) => !opt.text.trim());
+    if (emptyOptions) {
+      missingFields.push("All Poll Options");
+    }
+
+    // 如果有未填写的必填字段，显示详细错误信息
+    if (missingFields.length > 0) {
+      alert(
+        `Please complete the following required fields:\n• ${missingFields.join(
+          "\n• "
+        )}`
+      );
       return;
     }
 
@@ -101,6 +122,14 @@ export default function Home() {
 
       {/* Form */}
       <div className="border border-gray-300 rounded-lg p-8 bg-white">
+        {/* Form Notice */}
+        <div className="mb-6 p-3 bg-blue-50 border border-blue-200 rounded-md">
+          <p className="text-sm text-blue-700">
+            <span className="text-red-500">*</span> indicates required fields.
+            All fields marked with an asterisk must be completed.
+          </p>
+        </div>
+
         <div className="space-y-6">
           {/* Poll Title */}
           <div>
@@ -108,7 +137,7 @@ export default function Home() {
               htmlFor="title"
               className="block text-lg font-medium text-gray-700 mb-2"
             >
-              Poll Title
+              Poll Title <span className="text-red-500">*</span>
             </label>
             <input
               id="title"
@@ -127,7 +156,7 @@ export default function Home() {
               htmlFor="description"
               className="block text-lg font-medium text-gray-700 mb-2"
             >
-              Poll Description
+              Poll Description <span className="text-red-500">*</span>
             </label>
             <textarea
               id="description"
@@ -146,7 +175,7 @@ export default function Home() {
               htmlFor="deadline"
               className="block text-lg font-medium text-gray-700 mb-2"
             >
-              Poll Deadline
+              Poll Deadline <span className="text-red-500">*</span>
             </label>
             <input
               id="deadline"
@@ -163,7 +192,7 @@ export default function Home() {
           <div>
             <div className="flex items-center justify-between mb-4">
               <label className="text-lg font-medium text-gray-700">
-                Poll Options
+                Poll Options <span className="text-red-500">*</span>
               </label>
               <Button
                 type="button"
