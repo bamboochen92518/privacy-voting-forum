@@ -44,7 +44,6 @@ export default function PollDetail() {
     try {
       setLoading(true);
 
-      // 首先嘗試從單個 poll API 獲取資料
       try {
         const response = await axios.get(`/api/poll/${pollId}`);
         const rawData = response.data;
@@ -61,7 +60,6 @@ export default function PollDetail() {
         console.warn("Single poll API failed, trying fallback...", apiError);
       }
 
-      // Fallback: 從所有 polls 中找到對應的 poll
       const allPollsResponse = await axios.get("/api/poll");
       const targetPoll = allPollsResponse.data.find(
         (p: any) => p.id.toString() === pollId

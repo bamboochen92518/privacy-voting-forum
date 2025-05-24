@@ -18,7 +18,6 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handlePollCreation = async () => {
-    // 检查各个必填字段
     const missingFields = [];
 
     if (!title.trim()) {
@@ -33,13 +32,11 @@ export default function Home() {
       missingFields.push("Poll Deadline");
     }
 
-    // 检查是否有空的选项文本
     const emptyOptions = options.some((opt) => !opt.text.trim());
     if (emptyOptions) {
       missingFields.push("All Poll Options");
     }
 
-    // 如果有未填写的必填字段，显示详细错误信息
     if (missingFields.length > 0) {
       alert(
         `Please complete the following required fields:\n• ${missingFields.join(
@@ -67,7 +64,6 @@ export default function Home() {
       const response = await axios.post("/api/poll/create", newPoll);
       if (response.status === 201) {
         alert(`You have initiated a poll: ${title}`);
-        // Clear the form
         setTitle("");
         setDescription("");
         setDeadline("");
