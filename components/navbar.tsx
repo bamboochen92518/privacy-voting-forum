@@ -105,7 +105,7 @@ export default function Navbar() {
         {/* Right Side - Auth Buttons with Images */}
         <div className="hidden lg:flex items-center space-x-6">
           {/* MetaMask Button */}
-          <button className="group relative w-10 h-10 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110">
+          <button className="group relative w-10 h-10 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 cursor-pointer">
             <img
               src="/images/login/MetaMask.webp"
               alt="MetaMask"
@@ -114,7 +114,7 @@ export default function Navbar() {
           </button>
 
           {/* Self Protocol Button */}
-          <button className="group relative w-10 h-10 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110">
+          <button className="group relative w-10 h-10 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 cursor-pointer">
             <img
               src="/images/login/SelfProtocol.jpg"
               alt="Self Protocol"
@@ -126,7 +126,7 @@ export default function Navbar() {
         {/* Mobile Menu */}
         <Sheet>
           <SheetTrigger asChild>
-            <button className="lg:hidden relative p-2 rounded-xl hover:bg-gray-100 transition-colors group">
+            <button className="lg:hidden relative p-2 rounded-xl hover:bg-gray-100 transition-colors group cursor-pointer">
               <div className="w-6 h-6 flex flex-col justify-center items-center">
                 <span className="w-4 h-0.5 bg-gray-600 transition-all duration-300 group-hover:w-5"></span>
                 <span className="w-5 h-0.5 bg-gray-600 mt-1 transition-all duration-300"></span>
@@ -193,7 +193,7 @@ export default function Navbar() {
               <div className="py-6 border-t border-gray-200">
                 <div className="flex items-center justify-center space-x-6">
                   {/* MetaMask Button */}
-                  <button className="group relative w-12 h-12 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110">
+                  <button className="group relative w-12 h-12 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 cursor-pointer">
                     <img
                       src="/images/login/MetaMask.webp"
                       alt="MetaMask"
@@ -202,7 +202,7 @@ export default function Navbar() {
                   </button>
 
                   {/* Self Protocol Button */}
-                  <button className="group relative w-12 h-12 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110">
+                  <button className="group relative w-12 h-12 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 cursor-pointer">
                     <img
                       src="/images/login/SelfProtocol.jpg"
                       alt="Self Protocol"

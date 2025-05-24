@@ -153,7 +153,7 @@ export default function PollsList() {
             polls.map((poll: Poll, index: number) => (
               <div
                 key={poll.id}
-                className={`bg-white/80 backdrop-blur-sm border border-white/50 rounded-2xl p-8 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-500 group ${
+                className={`bg-white/80 backdrop-blur-sm border border-white/50 rounded-2xl p-8 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-500 group cursor-pointer ${
                   isVisible
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-10"
@@ -258,27 +258,103 @@ export default function PollsList() {
                   <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-200 mt-auto">
                     <Button
                       onClick={handleVote}
-                      className={`flex-1 font-medium py-2.5 ${
+                      className={`flex-1 font-semibold py-3 px-4 rounded-xl transition-all duration-300 cursor-pointer relative overflow-hidden group ${
                         isPollExpired(poll.end_date)
-                          ? "bg-gray-400 hover:bg-gray-400 text-white cursor-not-allowed"
-                          : "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white"
+                          ? "bg-gray-200/80 backdrop-blur-sm text-gray-500 cursor-not-allowed border border-gray-300"
+                          : selectedVotes[poll.id]
+                          ? "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl hover:scale-[1.02] border border-blue-400/50"
+                          : "bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm text-blue-700 hover:text-white hover:from-blue-600 hover:to-purple-600 border border-blue-300/50 hover:border-blue-500"
                       }`}
                       disabled={
                         !selectedVotes[poll.id] || isPollExpired(poll.end_date)
                       }
                     >
-                      {isPollExpired(poll.end_date)
-                        ? "Poll Expired"
-                        : selectedVotes[poll.id]
-                        ? "Cast Vote"
-                        : "Select Option"}
+                      <div className="flex items-center justify-center space-x-2 relative z-10">
+                        {isPollExpired(poll.end_date) ? (
+                          <>
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                              ></path>
+                            </svg>
+                            <span>Poll Expired</span>
+                          </>
+                        ) : selectedVotes[poll.id] ? (
+                          <>
+                            <svg
+                              className="w-4 h-4 group-hover:scale-110 transition-transform duration-200"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                              ></path>
+                            </svg>
+                            <span>Cast Vote</span>
+                          </>
+                        ) : (
+                          <>
+                            <svg
+                              className="w-4 h-4 group-hover:scale-110 transition-transform duration-200"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                              ></path>
+                            </svg>
+                            <span>Select Option</span>
+                          </>
+                        )}
+                      </div>
+                      {!isPollExpired(poll.end_date) && (
+                        <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      )}
                     </Button>
                     <Link href={`/polls/${poll.id}`} className="flex-1">
                       <Button
                         variant="outline"
-                        className="w-full py-2.5 border-2 hover:bg-gray-50 font-medium"
+                        className="w-full py-3 px-4 rounded-xl bg-white/40 backdrop-blur-sm border border-white/60 text-gray-700 hover:text-blue-600 hover:bg-white/60 hover:border-blue-400/50 font-semibold shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02] cursor-pointer group relative overflow-hidden"
                       >
-                        View Details
+                        <div className="flex items-center justify-center space-x-2 relative z-10">
+                          <svg
+                            className="w-4 h-4 group-hover:scale-110 transition-transform duration-200"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                            ></path>
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                            ></path>
+                          </svg>
+                          <span>View Details</span>
+                        </div>
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                       </Button>
                     </Link>
                   </div>

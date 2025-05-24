@@ -132,7 +132,7 @@ export default function About() {
             {teamMembers.map((member, index) => (
               <div
                 key={index}
-                className={`bg-white/80 backdrop-blur-sm border border-white/50 rounded-2xl p-6 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-500 text-center group ${
+                className={`bg-white/80 backdrop-blur-sm border border-white/50 rounded-2xl p-6 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-500 text-center group cursor-pointer ${
                   isVisible
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-10"
@@ -167,7 +167,7 @@ export default function About() {
           }`}
           style={{ transitionDelay: "1200ms" }}
         >
-          <div className="bg-white/80 backdrop-blur-sm border border-white/50 rounded-2xl p-6 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-500 text-center group">
+          <div className="bg-white/80 backdrop-blur-sm border border-white/50 rounded-2xl p-6 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-500 text-center group cursor-pointer">
             <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
               <svg
                 className="w-8 h-8 text-white"
@@ -192,7 +192,7 @@ export default function About() {
             </p>
           </div>
 
-          <div className="bg-white/80 backdrop-blur-sm border border-white/50 rounded-2xl p-6 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-500 text-center group">
+          <div className="bg-white/80 backdrop-blur-sm border border-white/50 rounded-2xl p-6 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-500 text-center group cursor-pointer">
             <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
               <svg
                 className="w-8 h-8 text-white"
@@ -217,7 +217,7 @@ export default function About() {
             </p>
           </div>
 
-          <div className="bg-white/80 backdrop-blur-sm border border-white/50 rounded-2xl p-6 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-500 text-center group">
+          <div className="bg-white/80 backdrop-blur-sm border border-white/50 rounded-2xl p-6 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-500 text-center group cursor-pointer">
             <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
               <svg
                 className="w-8 h-8 text-white"

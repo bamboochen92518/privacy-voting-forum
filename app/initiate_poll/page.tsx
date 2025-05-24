@@ -219,6 +219,7 @@ export default function Home() {
                   onClick={addOption}
                   variant="outline"
                   size="sm"
+                  className="cursor-pointer"
                 >
                   Add Option
                 </Button>
@@ -239,7 +240,7 @@ export default function Home() {
                           onClick={() => removeOption(index)}
                           variant="outline"
                           size="sm"
-                          className="text-red-600 hover:text-red-700 hover:border-red-300"
+                          className="text-red-600 hover:text-red-700 hover:border-red-300 cursor-pointer"
                         >
                           Remove
                         </Button>
@@ -287,7 +288,7 @@ export default function Home() {
               <Button
                 onClick={handlePollCreation}
                 disabled={isSubmitting}
-                className="w-full py-3 text-lg"
+                className="w-full py-3 text-lg cursor-pointer"
               >
                 {isSubmitting ? "Creating Poll..." : "Create Poll"}
               </Button>

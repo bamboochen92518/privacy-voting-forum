@@ -23,7 +23,7 @@ export default function ProjectIntro() {
       return "opacity-100 translate-y-0"; // 服务端渲染时直接显示
     }
     const baseClasses =
-      "bg-white/80 backdrop-blur-sm border border-white/50 rounded-2xl p-8 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-500 group";
+      "bg-white/80 backdrop-blur-sm border border-white/50 rounded-2xl p-8 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-500 group cursor-pointer";
     const animationClasses = `transition-all duration-1000 ${
       isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
     }`;

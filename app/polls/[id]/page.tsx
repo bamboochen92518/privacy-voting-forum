@@ -215,7 +215,7 @@ export default function PollDetail() {
                 </div>
               ))}
             </div>
-            <Button onClick={handleVote} className="mt-6 w-full">
+            <Button onClick={handleVote} className="mt-6 w-full cursor-pointer">
               Confirm Vote
             </Button>
           </div>
@@ -246,7 +246,9 @@ export default function PollDetail() {
                   rows={4}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                <Button onClick={handleAddComment}>Post Comment</Button>
+                <Button onClick={handleAddComment} className="cursor-pointer">
+                  Post Comment
+                </Button>
               </div>
             </div>
 
