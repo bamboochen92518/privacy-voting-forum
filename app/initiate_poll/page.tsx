@@ -73,10 +73,10 @@ export default function Home() {
     <section className="mx-auto flex max-w-4xl flex-col gap-8 px-4 py-24">
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Privacy Voting Forum</h1>
-        <h2 className="text-2xl font-semibold text-gray-700">
-          Create New Poll
-        </h2>
+        <h1 className="text-4xl font-bold sm:text-5xl mb-6">
+          Privacy Voting Forum
+        </h1>
+        <h2 className="text-3xl font-semibold text-gray-700">Initiate Poll</h2>
         <p className="text-muted-foreground mt-2">
           Set up a new voting poll for your community
         </p>
