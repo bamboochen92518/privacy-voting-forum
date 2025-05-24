@@ -78,8 +78,8 @@ export default function ProjectIntro() {
                 3
               </span>
               <span>
-                Install wallet SDKs like <em>wagmi / viem</em>, RainbowKit via{" "}
-                <strong>npm</strong>.
+                Set up authentication and database integration with{" "}
+                <strong>Supabase</strong> for secure user management.
               </span>
             </li>
             <li className="flex items-start">
@@ -131,14 +131,14 @@ export default function ProjectIntro() {
               <div className="w-2 h-2 bg-green-600 rounded-full mr-3 mt-2"></div>
               <span>
                 <strong>Tailwind CSS</strong> + <strong>shadcn/ui</strong>:
-                Quickly create layouts and light/dark themes.
+                Quickly create modern layouts and accessible UI components.
               </span>
             </li>
             <li className="flex items-start">
               <div className="w-2 h-2 bg-green-600 rounded-full mr-3 mt-2"></div>
               <span>
-                <strong>Responsive Design</strong>: Desktop horizontal
-                navigation bar, mobile hamburger drawer, auto-detect dark mode.
+                <strong>Responsive Design</strong>: Clean navigation and
+                mobile-friendly interface with modern card-based layouts.
               </span>
             </li>
           </ul>
@@ -239,15 +239,9 @@ export default function ProjectIntro() {
             <li className="flex items-start">
               <div className="w-2 h-2 bg-orange-600 rounded-full mr-3 mt-2"></div>
               <span>
-                <strong>wagmi + viem</strong>: Use{" "}
-                <code className="bg-gray-100 px-1 rounded">
-                  useContractRead
-                </code>
-                ,{" "}
-                <code className="bg-gray-100 px-1 rounded">
-                  useContractWrite
-                </code>{" "}
-                to read and write on-chain states.
+                <strong>Web3 Integration</strong>: Future plans to integrate
+                wallet connectivity and smart contract interactions for
+                decentralized voting.
               </span>
             </li>
           </ul>
