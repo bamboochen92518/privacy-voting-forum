@@ -136,121 +136,133 @@ export default function PollDetail() {
     alert("留言已新增！");
   };
 
-  if (loading) {
-    return (
-      <section className="mx-auto flex max-w-5xl flex-col items-center gap-8 px-4 py-24">
-        <div className="text-lg">載入中...</div>
-      </section>
-    );
-  }
-
-  if (error || !poll) {
-    return (
-      <section className="mx-auto flex max-w-5xl flex-col items-center gap-8 px-4 py-24">
-        <div className="text-lg text-red-600">{error || "找不到此投票"}</div>
-        <Link href="/poll_list" className="text-primary underline">
-          返回投票列表
-        </Link>
-      </section>
-    );
-  }
-
   return (
     <section className="mx-auto flex max-w-5xl flex-col gap-8 px-4 py-24">
-      {/* Poll Details Header */}
+      {/* Header */}
       <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">{poll.title}</h1>
-        <p className="text-lg text-muted-foreground mb-2">{poll.description}</p>
-        <p className="text-sm text-gray-600">截止日期: {poll.end_date}</p>
+        <h1 className="text-4xl font-bold mb-4">Privacy Voting Forum</h1>
+        <h2 className="text-2xl font-semibold text-gray-700">Poll Details</h2>
       </div>
 
-      {/* Voting Section */}
-      <div className="border border-gray-300 rounded-lg p-6 max-w-3xl mx-auto w-full">
-        <h2 className="text-2xl font-semibold mb-4">投票選項</h2>
-        <div className="space-y-3">
-          {poll.options.map((option, index) => (
-            <div key={index} className="flex items-center">
-              <input
-                type="radio"
-                id={`option-${index}`}
-                name="vote-option"
-                value={option.text}
-                onChange={(e) => setSelectedOption(e.target.value)}
-                className="mr-3"
-              />
-              <label
-                htmlFor={`option-${index}`}
-                className="text-lg cursor-pointer"
-              >
-                {option.text}
-              </label>
-            </div>
-          ))}
+      {/* Content */}
+      {loading ? (
+        <div className="text-center py-12">
+          <div className="text-lg text-muted-foreground">Loading...</div>
         </div>
-        <Button onClick={handleVote} className="mt-6 w-full">
-          確認投票
-        </Button>
-      </div>
-
-      {/* Comments Section */}
-      <div className="border border-gray-300 rounded-lg p-6 max-w-3xl mx-auto w-full">
-        <h2 className="text-2xl font-semibold mb-4">討論區</h2>
-
-        {/* Add Comment Form */}
-        <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-          <h3 className="text-lg font-medium mb-3">發表看法</h3>
-          <div className="space-y-3">
-            <input
-              type="text"
-              placeholder="請輸入您的姓名"
-              value={commentAuthor}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setCommentAuthor(e.target.value)
-              }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <textarea
-              placeholder="請分享您對這個投票的看法..."
-              value={newComment}
-              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                setNewComment(e.target.value)
-              }
-              rows={4}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <Button onClick={handleAddComment}>發表留言</Button>
+      ) : error || !poll ? (
+        <div className="text-center py-12">
+          <div className="text-lg text-red-600">
+            {error || "Poll not found"}
           </div>
+          <Link
+            href="/poll_list"
+            className="text-primary underline mt-4 inline-block"
+          >
+            Return to Poll List
+          </Link>
         </div>
-
-        {/* Comments List */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium">所有留言 ({comments.length})</h3>
-          {comments.length === 0 ? (
-            <p className="text-gray-500">
-              目前還沒有留言，成為第一個發表看法的人！
+      ) : (
+        <>
+          {/* Poll Details Header */}
+          <div className="text-center">
+            <h3 className="text-3xl font-bold mb-4">{poll.title}</h3>
+            <p className="text-lg text-muted-foreground mb-2">
+              {poll.description}
             </p>
-          ) : (
-            comments.map((comment) => (
-              <div
-                key={comment.id}
-                className="border-l-4 border-blue-500 pl-4 py-3"
-              >
-                <div className="flex justify-between items-start mb-2">
-                  <span className="font-medium text-blue-600">
-                    {comment.author}
-                  </span>
-                  <span className="text-sm text-gray-500">
-                    {comment.timestamp}
-                  </span>
+            <p className="text-sm text-gray-600">Deadline: {poll.end_date}</p>
+          </div>
+
+          {/* Voting Section */}
+          <div className="border border-gray-300 rounded-lg p-6 max-w-3xl mx-auto w-full">
+            <h2 className="text-2xl font-semibold mb-4">投票選項</h2>
+            <div className="space-y-3">
+              {poll.options.map((option, index) => (
+                <div key={index} className="flex items-center">
+                  <input
+                    type="radio"
+                    id={`option-${index}`}
+                    name="vote-option"
+                    value={option.text}
+                    onChange={(e) => setSelectedOption(e.target.value)}
+                    className="mr-3"
+                  />
+                  <label
+                    htmlFor={`option-${index}`}
+                    className="text-lg cursor-pointer"
+                  >
+                    {option.text}
+                  </label>
                 </div>
-                <p className="text-gray-700 leading-relaxed">
-                  {comment.content}
-                </p>
+              ))}
+            </div>
+            <Button onClick={handleVote} className="mt-6 w-full">
+              確認投票
+            </Button>
+          </div>
+
+          {/* Comments Section */}
+          <div className="border border-gray-300 rounded-lg p-6 max-w-3xl mx-auto w-full">
+            <h2 className="text-2xl font-semibold mb-4">討論區</h2>
+
+            {/* Add Comment Form */}
+            <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+              <h3 className="text-lg font-medium mb-3">發表看法</h3>
+              <div className="space-y-3">
+                <input
+                  type="text"
+                  placeholder="請輸入您的姓名"
+                  value={commentAuthor}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setCommentAuthor(e.target.value)
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <textarea
+                  placeholder="請分享您對這個投票的看法..."
+                  value={newComment}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                    setNewComment(e.target.value)
+                  }
+                  rows={4}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <Button onClick={handleAddComment}>發表留言</Button>
               </div>
-            ))
-          )}
-        </div>
-      </div>
+            </div>
+
+            {/* Comments List */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">
+                所有留言 ({comments.length})
+              </h3>
+              {comments.length === 0 ? (
+                <p className="text-gray-500">
+                  目前還沒有留言，成為第一個發表看法的人！
+                </p>
+              ) : (
+                comments.map((comment) => (
+                  <div
+                    key={comment.id}
+                    className="border-l-4 border-blue-500 pl-4 py-3"
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <span className="font-medium text-blue-600">
+                        {comment.author}
+                      </span>
+                      <span className="text-sm text-gray-500">
+                        {comment.timestamp}
+                      </span>
+                    </div>
+                    <p className="text-gray-700 leading-relaxed">
+                      {comment.content}
+                    </p>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Navigation */}
       <div className="text-center">

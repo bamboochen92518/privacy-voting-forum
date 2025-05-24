@@ -15,14 +15,18 @@ export default function PollsList() {
     option: string;
   } | null>(null);
   const [polls, setPolls] = useState<Poll[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPolls = async () => {
       try {
+        setLoading(true);
         const response = await axios.get("/api/poll");
         setPolls(response.data);
       } catch (error) {
         console.error("Error fetching polls:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -44,70 +48,103 @@ export default function PollsList() {
   };
 
   return (
-    <section className="mx-auto flex max-w-5xl flex-col items-center gap-8 px-4 py-24">
-      <h1 className="text-4xl font-bold sm:text-5xl">Privacy Voting Forum</h1>
-      <h2 className="text-2xl font-semibold mt-8">Poll List</h2>
-      <h2 className="text-2xl font-semibold mt-8"></h2>
-      <ul className="w-full max-w-lg">
-        {polls.length === 0 ? (
-          <li className="text-lg text-muted-foreground">
-            No polls available at the moment.
-          </li>
+    <section className="mx-auto flex max-w-5xl flex-col gap-8 px-4 py-24">
+      {/* Header */}
+      <div className="text-center">
+        <h1 className="text-4xl font-bold mb-4">Privacy Voting Forum</h1>
+        <h2 className="text-2xl font-semibold text-gray-700">Active Polls</h2>
+      </div>
+
+      {/* Polls List */}
+      <div className="space-y-6">
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="text-lg text-muted-foreground">Loading...</div>
+          </div>
+        ) : polls.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="text-lg text-muted-foreground">
+              No polls available at the moment.
+            </div>
+          </div>
         ) : (
           polls.map((poll: Poll) => (
-            <li
+            <div
               key={poll.id}
-              className="border border-gray-300 rounded-md p-4 mb-4"
+              className="border border-gray-300 rounded-lg p-6 bg-white hover:shadow-lg transition-shadow duration-300"
             >
-              <div className="flex flex-col items-start">
-                <h2 className="text-2xl font-semibold mb-2">{poll.title}</h2>
-                <p className="text-lg text-muted-foreground mb-2">
-                  {poll.description}
-                </p>
-                <p className="text-sm mb-2">Deadline: {poll.end_date}</p>
-                <div className="mt-2">
-                  <span className="font-semibold text-lg">Poll Options:</span>
-                  {poll.options.map(
-                    (option: { text: string }, index: number) => (
-                      <div
-                        key={index}
-                        className="flex items-center mb-2 text-lg"
-                      >
-                        <input
-                          type="radio"
-                          id={`option-${poll.id}-${index}`}
-                          name={`poll-${poll.id}`}
-                          value={option.text}
-                          onChange={() =>
-                            handleVoteSelection(poll.id, option.text)
-                          }
-                        />
-                        <label
-                          htmlFor={`option-${poll.id}-${index}`}
-                          className="ml-2"
-                        >
-                          {option.text}
-                        </label>
-                      </div>
-                    )
-                  )}
+              <div className="flex flex-col space-y-4">
+                {/* Poll Header */}
+                <div className="border-b border-gray-200 pb-4">
+                  <h3 className="text-2xl font-semibold mb-2 text-gray-800">
+                    {poll.title}
+                  </h3>
+                  <p className="text-lg text-muted-foreground mb-2">
+                    {poll.description}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    Deadline: {new Date(poll.end_date).toLocaleDateString()}
+                  </p>
                 </div>
-                <Button onClick={handleVote} className="mt-2">
-                  Vote
-                </Button>
-                <Link
-                  href={`/polls/${poll.id}`}
-                  className="text-blue-500 underline"
-                >
-                  View Details
-                </Link>
+
+                {/* Poll Options */}
+                <div>
+                  <h4 className="font-semibold text-lg mb-3 text-gray-800">
+                    Poll Options:
+                  </h4>
+                  <div className="space-y-2">
+                    {poll.options.map(
+                      (option: { text: string }, index: number) => (
+                        <div
+                          key={index}
+                          className="flex items-center p-2 rounded hover:bg-gray-50"
+                        >
+                          <input
+                            type="radio"
+                            id={`option-${poll.id}-${index}`}
+                            name={`poll-${poll.id}`}
+                            value={option.text}
+                            onChange={() =>
+                              handleVoteSelection(poll.id, option.text)
+                            }
+                            className="mr-3 w-4 h-4"
+                          />
+                          <label
+                            htmlFor={`option-${poll.id}-${index}`}
+                            className="text-lg cursor-pointer flex-1"
+                          >
+                            {option.text}
+                          </label>
+                        </div>
+                      )
+                    )}
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-200">
+                  <Button
+                    onClick={handleVote}
+                    className="flex-1"
+                    disabled={!selectedVotes[poll.id]}
+                  >
+                    Vote
+                  </Button>
+                  <Link href={`/polls/${poll.id}`} className="flex-1">
+                    <Button variant="outline" className="w-full">
+                      View Details
+                    </Button>
+                  </Link>
+                </div>
               </div>
-            </li>
+            </div>
           ))
         )}
-      </ul>
-      <div className="mt-4">
-        <Link href="/" className="text-primary underline">
+      </div>
+
+      {/* Navigation */}
+      <div className="text-center pt-8">
+        <Link href="/" className="text-primary underline hover:text-primary/80">
           Return to Home
         </Link>
       </div>
