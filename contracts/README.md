@@ -92,10 +92,11 @@ The tests cover:
    ```bash
    forge create --rpc-url $CELO_TESTNET_RPC_URL \
        --private-key $PRIVATE_KEY \
+       --broadcast\
        src/VotingFactory.sol:VotingFactory \
        --constructor-args \
        0x3e2487a250e2A7b56c7ef5307Fb591Cc8C83623D \
-       123456789 \
+       17327039844740830559437039735385598166060071486615314997831315260042143232682 \
        1 \
        false \
        0 \
@@ -125,8 +126,8 @@ The tests cover:
 5. **Deployment Details**:
 
    - **Deployer**: `0xdeF12008061B9eB7137128CA354Aebc9816b0f6B`
-   - **Deployed to**: `0x8F73e7B7B95C312B30547A4469Aa0A627b4777b1`
-   - **Transaction hash**: `0x8dfbf32a89117d031ef5a9c96e123d23b55f46982c1fcf6e1e2095dac47d741b`
+   - **Deployed to**: `0xbee98A7F2AB6409f4bE7EE91817318459cf3A2FC`
+   - **Transaction hash**: `0x3ac38e1fc0ff687b7378b4c8303a735a7e913f3f0fa3de4ed4963ae6ce7491b0`
 
    **Note**: These details reflect the previous deployment. Redeploying will generate new values.
 
