@@ -11,7 +11,7 @@ interface Poll {
   title: string;
   description: string;
   end_date: string;
-  options: { text: string }[];
+  options: { text: string; description?: string }[];
 }
 
 interface Comment {
@@ -179,23 +179,41 @@ export default function PollDetail() {
           {/* Voting Section */}
           <div className="border border-gray-300 rounded-lg p-6 max-w-3xl mx-auto w-full">
             <h2 className="text-2xl font-semibold mb-4">Voting Options</h2>
-            <div className="space-y-3">
+            <div className="space-y-4">
               {poll.options.map((option, index) => (
-                <div key={index} className="flex items-center">
-                  <input
-                    type="radio"
-                    id={`option-${index}`}
-                    name="vote-option"
-                    value={option.text}
-                    onChange={(e) => setSelectedOption(e.target.value)}
-                    className="mr-3"
-                  />
-                  <label
-                    htmlFor={`option-${index}`}
-                    className="text-lg cursor-pointer"
-                  >
-                    {option.text}
-                  </label>
+                <div
+                  key={index}
+                  className={`border rounded-lg p-4 cursor-pointer transition-all duration-200 ${
+                    selectedOption === option.text
+                      ? "border-blue-500 bg-blue-50 shadow-md"
+                      : "border-gray-300 hover:border-gray-400 hover:shadow-sm"
+                  }`}
+                  onClick={() => setSelectedOption(option.text)}
+                >
+                  <div className="flex items-start">
+                    <input
+                      type="radio"
+                      id={`option-${index}`}
+                      name="vote-option"
+                      value={option.text}
+                      checked={selectedOption === option.text}
+                      onChange={(e) => setSelectedOption(e.target.value)}
+                      className="mt-1 mr-3"
+                    />
+                    <div className="flex-1">
+                      <label
+                        htmlFor={`option-${index}`}
+                        className="text-lg font-medium cursor-pointer block"
+                      >
+                        {option.text}
+                      </label>
+                      {option.description && option.description.trim() && (
+                        <p className="text-sm text-gray-600 mt-2 leading-relaxed">
+                          {option.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
