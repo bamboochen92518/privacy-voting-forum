@@ -1,0 +1,263 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import axios from "axios";
+
+interface Poll {
+  id: string;
+  title: string;
+  description: string;
+  end_date: string;
+  options: { text: string }[];
+}
+
+interface Comment {
+  id: string;
+  author: string;
+  content: string;
+  timestamp: string;
+}
+
+export default function PollDetail() {
+  const params = useParams();
+  const pollId = params?.id as string;
+
+  const [poll, setPoll] = useState<Poll | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedOption, setSelectedOption] = useState<string>("");
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [newComment, setNewComment] = useState("");
+  const [commentAuthor, setCommentAuthor] = useState("");
+
+  useEffect(() => {
+    if (pollId) {
+      fetchPollDetail();
+      fetchComments();
+    }
+  }, [pollId]);
+
+  const fetchPollDetail = async () => {
+    try {
+      setLoading(true);
+
+      // 首先嘗試從單個 poll API 獲取資料
+      try {
+        const response = await axios.get(`/api/poll/${pollId}`);
+        const rawData = response.data;
+        const transformedPoll: Poll = {
+          id: rawData.id,
+          title: rawData.title,
+          description: rawData.description,
+          end_date: rawData.end_date || rawData.deadline,
+          options: rawData.options,
+        };
+        setPoll(transformedPoll);
+        return;
+      } catch (apiError) {
+        console.warn("Single poll API failed, trying fallback...", apiError);
+      }
+
+      // Fallback: 從所有 polls 中找到對應的 poll
+      const allPollsResponse = await axios.get("/api/poll");
+      const targetPoll = allPollsResponse.data.find(
+        (p: any) => p.id.toString() === pollId
+      );
+
+      if (targetPoll) {
+        const transformedPoll: Poll = {
+          id: targetPoll.id,
+          title: targetPoll.title,
+          description: targetPoll.description,
+          end_date: targetPoll.end_date || targetPoll.deadline,
+          options: targetPoll.options,
+        };
+        setPoll(transformedPoll);
+      } else {
+        setError("找不到此投票");
+      }
+    } catch (error) {
+      console.error("Error fetching poll:", error);
+      setError("無法載入投票詳情");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchComments = async () => {
+    // TODO: 實作留言 API 後替換
+    // 目前為模擬資料
+    const mockComments: Comment[] = [
+      {
+        id: "1",
+        author: "使用者A",
+        content: "這個投票議題很有趣，我認為選項1比較合適。",
+        timestamp: "2024-01-15 10:30",
+      },
+      {
+        id: "2",
+        author: "使用者B",
+        content: "我有不同的看法，選項2可能更符合實際需求。",
+        timestamp: "2024-01-15 11:45",
+      },
+    ];
+    setComments(mockComments);
+  };
+
+  const handleVote = () => {
+    if (!selectedOption) {
+      alert("請選擇一個選項");
+      return;
+    }
+    // TODO: 實作投票 API
+    alert(`您已投票給: ${selectedOption}`);
+  };
+
+  const handleAddComment = () => {
+    if (!newComment.trim() || !commentAuthor.trim()) {
+      alert("請填寫姓名和留言內容");
+      return;
+    }
+
+    // TODO: 實作新增留言 API
+    const comment: Comment = {
+      id: Date.now().toString(),
+      author: commentAuthor,
+      content: newComment,
+      timestamp: new Date().toLocaleString("zh-TW"),
+    };
+
+    setComments([...comments, comment]);
+    setNewComment("");
+    setCommentAuthor("");
+    alert("留言已新增！");
+  };
+
+  if (loading) {
+    return (
+      <section className="mx-auto flex max-w-5xl flex-col items-center gap-8 px-4 py-24">
+        <div className="text-lg">載入中...</div>
+      </section>
+    );
+  }
+
+  if (error || !poll) {
+    return (
+      <section className="mx-auto flex max-w-5xl flex-col items-center gap-8 px-4 py-24">
+        <div className="text-lg text-red-600">{error || "找不到此投票"}</div>
+        <Link href="/poll_list" className="text-primary underline">
+          返回投票列表
+        </Link>
+      </section>
+    );
+  }
+
+  return (
+    <section className="mx-auto flex max-w-5xl flex-col gap-8 px-4 py-24">
+      {/* Poll Details Header */}
+      <div className="text-center">
+        <h1 className="text-4xl font-bold mb-4">{poll.title}</h1>
+        <p className="text-lg text-muted-foreground mb-2">{poll.description}</p>
+        <p className="text-sm text-gray-600">截止日期: {poll.end_date}</p>
+      </div>
+
+      {/* Voting Section */}
+      <div className="border border-gray-300 rounded-lg p-6 max-w-3xl mx-auto w-full">
+        <h2 className="text-2xl font-semibold mb-4">投票選項</h2>
+        <div className="space-y-3">
+          {poll.options.map((option, index) => (
+            <div key={index} className="flex items-center">
+              <input
+                type="radio"
+                id={`option-${index}`}
+                name="vote-option"
+                value={option.text}
+                onChange={(e) => setSelectedOption(e.target.value)}
+                className="mr-3"
+              />
+              <label
+                htmlFor={`option-${index}`}
+                className="text-lg cursor-pointer"
+              >
+                {option.text}
+              </label>
+            </div>
+          ))}
+        </div>
+        <Button onClick={handleVote} className="mt-6 w-full">
+          確認投票
+        </Button>
+      </div>
+
+      {/* Comments Section */}
+      <div className="border border-gray-300 rounded-lg p-6 max-w-3xl mx-auto w-full">
+        <h2 className="text-2xl font-semibold mb-4">討論區</h2>
+
+        {/* Add Comment Form */}
+        <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+          <h3 className="text-lg font-medium mb-3">發表看法</h3>
+          <div className="space-y-3">
+            <input
+              type="text"
+              placeholder="請輸入您的姓名"
+              value={commentAuthor}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setCommentAuthor(e.target.value)
+              }
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <textarea
+              placeholder="請分享您對這個投票的看法..."
+              value={newComment}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                setNewComment(e.target.value)
+              }
+              rows={4}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <Button onClick={handleAddComment}>發表留言</Button>
+          </div>
+        </div>
+
+        {/* Comments List */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium">所有留言 ({comments.length})</h3>
+          {comments.length === 0 ? (
+            <p className="text-gray-500">
+              目前還沒有留言，成為第一個發表看法的人！
+            </p>
+          ) : (
+            comments.map((comment) => (
+              <div
+                key={comment.id}
+                className="border-l-4 border-blue-500 pl-4 py-3"
+              >
+                <div className="flex justify-between items-start mb-2">
+                  <span className="font-medium text-blue-600">
+                    {comment.author}
+                  </span>
+                  <span className="text-sm text-gray-500">
+                    {comment.timestamp}
+                  </span>
+                </div>
+                <p className="text-gray-700 leading-relaxed">
+                  {comment.content}
+                </p>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* Navigation */}
+      <div className="text-center">
+        <Link href="/poll_list" className="text-primary underline">
+          返回投票列表
+        </Link>
+      </div>
+    </section>
+  );
+}

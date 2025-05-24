@@ -64,7 +64,7 @@ export default function PollsList() {
                 <p className="text-lg text-muted-foreground mb-2">
                   {poll.description}
                 </p>
-                <p className="text-sm mb-2">Deadline: {poll.deadline}</p>
+                <p className="text-sm mb-2">Deadline: {poll.end_date}</p>
                 <div className="mt-2">
                   <span className="font-semibold text-lg">Poll Options:</span>
                   {poll.options.map(
