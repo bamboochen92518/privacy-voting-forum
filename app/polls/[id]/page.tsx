@@ -93,14 +93,16 @@ export default function PollDetail() {
     const mockComments: Comment[] = [
       {
         id: "1",
-        author: "使用者A",
-        content: "這個投票議題很有趣，我認為選項1比較合適。",
+        author: "Satoshi Nakamoto",
+        content:
+          "This poll topic is very interesting. I think Option 1 is more suitable for our community needs.",
         timestamp: "2024-01-15 10:30",
       },
       {
         id: "2",
-        author: "使用者B",
-        content: "我有不同的看法，選項2可能更符合實際需求。",
+        author: "Vitalik Buterin",
+        content:
+          "I have a different perspective. Option 2 might better align with our long-term goals and practical requirements.",
         timestamp: "2024-01-15 11:45",
       },
     ];
@@ -109,16 +111,16 @@ export default function PollDetail() {
 
   const handleVote = () => {
     if (!selectedOption) {
-      alert("請選擇一個選項");
+      alert("Please select an option");
       return;
     }
     // TODO: 實作投票 API
-    alert(`您已投票給: ${selectedOption}`);
+    alert(`You have voted for: ${selectedOption}`);
   };
 
   const handleAddComment = () => {
     if (!newComment.trim() || !commentAuthor.trim()) {
-      alert("請填寫姓名和留言內容");
+      alert("Please fill in both name and comment");
       return;
     }
 
@@ -127,13 +129,13 @@ export default function PollDetail() {
       id: Date.now().toString(),
       author: commentAuthor,
       content: newComment,
-      timestamp: new Date().toLocaleString("zh-TW"),
+      timestamp: new Date().toLocaleString("en-US"),
     };
 
     setComments([...comments, comment]);
     setNewComment("");
     setCommentAuthor("");
-    alert("留言已新增！");
+    alert("Comment added successfully!");
   };
 
   return (
@@ -174,7 +176,7 @@ export default function PollDetail() {
 
           {/* Voting Section */}
           <div className="border border-gray-300 rounded-lg p-6 max-w-3xl mx-auto w-full">
-            <h2 className="text-2xl font-semibold mb-4">投票選項</h2>
+            <h2 className="text-2xl font-semibold mb-4">Voting Options</h2>
             <div className="space-y-3">
               {poll.options.map((option, index) => (
                 <div key={index} className="flex items-center">
@@ -196,21 +198,21 @@ export default function PollDetail() {
               ))}
             </div>
             <Button onClick={handleVote} className="mt-6 w-full">
-              確認投票
+              Confirm Vote
             </Button>
           </div>
 
           {/* Comments Section */}
           <div className="border border-gray-300 rounded-lg p-6 max-w-3xl mx-auto w-full">
-            <h2 className="text-2xl font-semibold mb-4">討論區</h2>
+            <h2 className="text-2xl font-semibold mb-4">Discussion</h2>
 
             {/* Add Comment Form */}
             <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-lg font-medium mb-3">發表看法</h3>
+              <h3 className="text-lg font-medium mb-3">Share Your Thoughts</h3>
               <div className="space-y-3">
                 <input
                   type="text"
-                  placeholder="請輸入您的姓名"
+                  placeholder="Enter your name"
                   value={commentAuthor}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setCommentAuthor(e.target.value)
@@ -218,7 +220,7 @@ export default function PollDetail() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <textarea
-                  placeholder="請分享您對這個投票的看法..."
+                  placeholder="Share your thoughts about this poll..."
                   value={newComment}
                   onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                     setNewComment(e.target.value)
@@ -226,18 +228,18 @@ export default function PollDetail() {
                   rows={4}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                <Button onClick={handleAddComment}>發表留言</Button>
+                <Button onClick={handleAddComment}>Post Comment</Button>
               </div>
             </div>
 
             {/* Comments List */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium">
-                所有留言 ({comments.length})
+                All Comments ({comments.length})
               </h3>
               {comments.length === 0 ? (
                 <p className="text-gray-500">
-                  目前還沒有留言，成為第一個發表看法的人！
+                  No comments yet. Be the first to share your thoughts!
                 </p>
               ) : (
                 comments.map((comment) => (
@@ -267,7 +269,7 @@ export default function PollDetail() {
       {/* Navigation */}
       <div className="text-center">
         <Link href="/poll_list" className="text-primary underline">
-          返回投票列表
+          Return to Poll List
         </Link>
       </div>
     </section>
