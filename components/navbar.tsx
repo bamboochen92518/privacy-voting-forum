@@ -9,8 +9,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { useState, useEffect } from "react";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 /* ======================
    Navigation Links Configuration
@@ -133,6 +139,9 @@ export default function Navbar() {
             side="left"
             className="w-80 bg-white/95 backdrop-blur-xl border-r border-gray-200/50"
           >
+            <VisuallyHidden>
+              <SheetTitle>Navigation Menu</SheetTitle>
+            </VisuallyHidden>
             <div className="flex flex-col h-full">
               {/* Mobile Header */}
               <div className="flex items-center space-x-3 py-6 pr-4 border-b border-gray-200 ml-auto mr-8">
